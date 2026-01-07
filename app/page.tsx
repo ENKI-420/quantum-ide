@@ -22,14 +22,17 @@ import {
   BookOpen,
   MessageSquare,
   ChevronRight,
-  Cpu,
   Shield,
   BarChart3,
   GitBranch,
-  Plug,
   Check,
   Play,
-  ExternalLink,
+  Zap,
+  Brain,
+  Server,
+  Database,
+  Globe,
+  Lock,
 } from "lucide-react"
 
 const platformFeatures = [
@@ -40,6 +43,7 @@ const platformFeatures = [
       "Advanced code editor with DNA-Lang syntax highlighting, intelligent autocomplete, and real-time validation.",
     href: "/ide-platform/editor",
     category: "Core IDE",
+    badge: null,
   },
   {
     icon: Workflow,
@@ -47,6 +51,7 @@ const platformFeatures = [
     description: "Visual drag-and-drop genome circuit builder with quantum gate placement and DNA-Lang export.",
     href: "/ide-platform/circuit-designer",
     category: "Visual Tools",
+    badge: null,
   },
   {
     icon: Bug,
@@ -55,6 +60,15 @@ const platformFeatures = [
       "Step-through debugging with quantum state visualization, entanglement maps, and breakpoint management.",
     href: "/ide-platform/debugger",
     category: "Core IDE",
+    badge: null,
+  },
+  {
+    icon: Brain,
+    title: "Genomic Twin",
+    description: "AI-powered genomic analysis with RAG pipelines, real-time inference, and clinical JSON outputs.",
+    href: "/genomic-twin",
+    category: "AI Tools",
+    badge: "New",
   },
   {
     icon: Terminal,
@@ -62,6 +76,7 @@ const platformFeatures = [
     description: "Interactive command-line for executing organisms, running evolution cycles, and monitoring metrics.",
     href: "/ide-platform/terminal",
     category: "Core IDE",
+    badge: null,
   },
   {
     icon: FolderTree,
@@ -69,6 +84,7 @@ const platformFeatures = [
     description: "Organize organisms with templates, version control integration, and collaborative workspaces.",
     href: "/ide-platform/projects",
     category: "Management",
+    badge: null,
   },
   {
     icon: Puzzle,
@@ -76,6 +92,7 @@ const platformFeatures = [
     description: "Browse, install, and manage extensions, themes, and plugins from the community.",
     href: "/ide-platform/marketplace",
     category: "Ecosystem",
+    badge: null,
   },
   {
     icon: Palette,
@@ -83,6 +100,7 @@ const platformFeatures = [
     description: "Customize your workspace with drag-and-drop panel arrangement, themes, and keybindings.",
     href: "/ide-platform/builder",
     category: "Customization",
+    badge: null,
   },
   {
     icon: Boxes,
@@ -90,6 +108,7 @@ const platformFeatures = [
     description: "Start projects faster with pre-built templates for common patterns and use cases.",
     href: "/ide-platform/templates",
     category: "Ecosystem",
+    badge: null,
   },
   {
     icon: MessageSquare,
@@ -97,6 +116,7 @@ const platformFeatures = [
     description: "Quantum-enhanced AI for code generation, debugging help, and documentation queries.",
     href: "/ai-assistant",
     category: "AI Tools",
+    badge: null,
   },
   {
     icon: BookOpen,
@@ -104,13 +124,7 @@ const platformFeatures = [
     description: "Comprehensive guides, API reference, tutorials, and best practices for DNA-Lang development.",
     href: "/ide-platform/docs",
     category: "Resources",
-  },
-  {
-    icon: Plug,
-    title: "Integrations Hub",
-    description: "Connect with external tools, version control systems, and deployment platforms.",
-    href: "/ide-platform/integrations",
-    category: "Ecosystem",
+    badge: null,
   },
   {
     icon: BarChart3,
@@ -118,6 +132,7 @@ const platformFeatures = [
     description: "Monitor organism performance, resource usage, and quantum coherence metrics.",
     href: "/analytics",
     category: "Observability",
+    badge: null,
   },
 ]
 
@@ -170,6 +185,13 @@ const stats = [
   { value: "99.9%", label: "Uptime SLA", icon: Shield },
 ]
 
+const apiEndpoints = [
+  { endpoint: "/api/generate", description: "Single-turn generation", icon: Zap },
+  { endpoint: "/api/chat", description: "Multi-agent conversations", icon: MessageSquare },
+  { endpoint: "/api/embed", description: "Vector embeddings", icon: Database },
+  { endpoint: "/api/show", description: "Model metadata", icon: Server },
+]
+
 const categories = [
   "All",
   "Core IDE",
@@ -195,10 +217,11 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
+      {/* Hero Section - Enhanced with better visual hierarchy */}
       <section className="relative py-12 sm:py-20 lg:py-28 px-4 sm:px-6 overflow-hidden">
-        {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
+
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none" />
 
         <div className="max-w-[1200px] mx-auto relative">
           <div className="text-center max-w-3xl mx-auto space-y-6">
@@ -207,13 +230,13 @@ export default function Page() {
               The Complete IDE Development Platform
             </Badge>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-balance">
               <span className="text-foreground">Build the IDE</span>
               <br />
               <span className="dnalang-gradient">You&apos;ve Always Wanted</span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto text-pretty">
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto text-pretty leading-relaxed">
               A revolutionary platform for creating, customizing, and extending integrated development environments
               using <strong className="text-foreground">biological computing paradigms</strong>.
             </p>
@@ -239,10 +262,10 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Live IDE Preview */}
+          {/* Live IDE Preview - Enhanced with smoother animations */}
           <div className="mt-12 sm:mt-16 relative">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-2xl blur-xl opacity-50" />
-            <Card className="relative bg-card/80 backdrop-blur border-border/50 overflow-hidden">
+            <Card className="relative bg-card/80 backdrop-blur border-border/50 overflow-hidden shadow-2xl">
               {/* Window chrome */}
               <div className="flex items-center gap-3 px-4 py-3 bg-muted/50 border-b border-border">
                 <div className="flex gap-2">
@@ -265,17 +288,19 @@ export default function Page() {
               <div className="grid grid-cols-12 min-h-[300px] sm:min-h-[400px]">
                 {/* File explorer */}
                 <div className="col-span-3 border-r border-border p-3 hidden sm:block">
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Explorer</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 font-medium">
+                    Explorer
+                  </div>
                   <div className="space-y-1 text-xs">
                     <div className="flex items-center gap-2 p-1.5 rounded bg-primary/10 text-primary">
                       <Code2 className="h-3 w-3" />
                       quantum_processor.dna
                     </div>
-                    <div className="flex items-center gap-2 p-1.5 rounded text-muted-foreground hover:bg-muted">
+                    <div className="flex items-center gap-2 p-1.5 rounded text-muted-foreground hover:bg-muted transition-colors cursor-pointer">
                       <FolderTree className="h-3 w-3" />
                       organisms/
                     </div>
-                    <div className="flex items-center gap-2 p-1.5 rounded text-muted-foreground hover:bg-muted">
+                    <div className="flex items-center gap-2 p-1.5 rounded text-muted-foreground hover:bg-muted transition-colors cursor-pointer">
                       <Workflow className="h-3 w-3" />
                       circuits/
                     </div>
@@ -319,32 +344,34 @@ export default function Page() {
                   </div>
                 </div>
 
-                {/* Right panel */}
+                {/* Right panel - Quantum state */}
                 <div className="col-span-3 border-l border-border p-3 hidden sm:block">
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Quantum State</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 font-medium">
+                    Quantum State
+                  </div>
                   <div className="space-y-3">
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px]">
                         <span className="text-muted-foreground">Coherence</span>
-                        <span className="text-secondary">94.2%</span>
+                        <span className="text-secondary font-medium">94.2%</span>
                       </div>
                       <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full w-[94%] bg-secondary rounded-full" />
+                        <div className="h-full w-[94%] bg-secondary rounded-full transition-all duration-1000" />
                       </div>
                     </div>
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px]">
                         <span className="text-muted-foreground">Φ Value</span>
-                        <span className="text-primary">0.618</span>
+                        <span className="text-primary font-medium">0.618</span>
                       </div>
                       <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full w-[62%] bg-primary rounded-full" />
+                        <div className="h-full w-[62%] bg-primary rounded-full transition-all duration-1000" />
                       </div>
                     </div>
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px]">
                         <span className="text-muted-foreground">Evolution</span>
-                        <span className="text-accent">Gen 847</span>
+                        <span className="text-accent font-medium">Gen 847</span>
                       </div>
                     </div>
                   </div>
@@ -355,7 +382,7 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Stats Bar */}
+      {/* Stats Bar - Enhanced with better spacing */}
       <section className="border-y border-border bg-muted/30">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border">
@@ -372,7 +399,53 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Platform Features Grid */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6 border-b border-border">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="text-center mb-8">
+            <Badge variant="outline" className="mb-4">
+              <Server className="h-3 w-3 mr-1" />
+              Model-Serving API
+            </Badge>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3">Genomic Twin Integration</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              Enterprise-grade LLM backbone for genomic analysis, clinical outputs, and RAG pipelines.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {apiEndpoints.map((api) => (
+              <Card key={api.endpoint} className="p-4 hover:border-primary/50 transition-colors group">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <api.icon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <code className="text-xs font-mono text-primary">{api.endpoint}</code>
+                    <p className="text-sm text-muted-foreground mt-1">{api.description}</p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Lock className="h-4 w-4 text-secondary" />
+              <span>SHA-256 verified blobs</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4 text-secondary" />
+              <span>Edge deployment ready</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-secondary" />
+              <span>HIPAA compliant</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Platform Features Grid - Enhanced with better visual feedback */}
       <section className="py-12 sm:py-20 px-4 sm:px-6">
         <div className="max-w-[1200px] mx-auto">
           <div className="text-center mb-8 sm:mb-12">
@@ -386,7 +459,7 @@ export default function Page() {
             </p>
           </div>
 
-          {/* Category filter - horizontal scroll on mobile */}
+          {/* Category filter */}
           <div className="flex gap-2 overflow-x-auto scrollbar-none pb-4 mb-6 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:justify-center">
             {categories.map((cat) => (
               <button
@@ -394,7 +467,7 @@ export default function Page() {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                   activeCategory === cat
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
@@ -418,7 +491,12 @@ export default function Page() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="font-semibold group-hover:text-primary transition-colors">{feature.title}</h3>
-                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                        {feature.badge && (
+                          <Badge className="text-[10px] px-1.5 py-0 bg-secondary text-secondary-foreground">
+                            {feature.badge}
+                          </Badge>
+                        )}
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 ml-auto">
                           {feature.category}
                         </Badge>
                       </div>
@@ -459,13 +537,12 @@ export default function Page() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {userJourneySteps.map((step, i) => (
               <div key={step.step} className="relative">
-                {/* Connector line */}
                 {i < userJourneySteps.length - 1 && (
                   <div className="hidden lg:block absolute top-10 left-[calc(50%+40px)] w-[calc(100%-80px)] h-0.5 bg-border" />
                 )}
-                <Card className="p-6 text-center h-full relative">
+                <Card className="p-6 text-center h-full relative hover:shadow-lg transition-shadow">
                   <div
-                    className={`w-10 h-10 rounded-full ${step.color} text-white flex items-center justify-center font-bold text-lg mx-auto mb-4`}
+                    className={`w-10 h-10 rounded-full ${step.color} text-white flex items-center justify-center font-bold text-lg mx-auto mb-4 shadow-lg`}
                   >
                     {step.step}
                   </div>
@@ -482,40 +559,39 @@ export default function Page() {
       {/* Industry Comparison */}
       <section className="py-12 sm:py-20 px-4 sm:px-6">
         <div className="max-w-[1200px] mx-auto">
-          <div className="text-center mb-10 sm:mb-14">
+          <div className="text-center mb-10">
             <Badge variant="outline" className="mb-4">
               <BarChart3 className="h-3 w-3 mr-1" />
               Industry Comparison
             </Badge>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">How We Compare to Industry Leaders</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">How We Compare</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               See how DNA-Lang IDE Platform stacks up against traditional development environments.
             </p>
           </div>
 
-          {/* Comparison table */}
           <Card className="overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[600px]">
+              <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
                     <th className="text-left p-4 font-semibold">Feature</th>
-                    <th className="p-4 font-semibold">
+                    <th className="text-center p-4 font-semibold">
                       <div className="flex items-center justify-center gap-2">
                         <Dna className="h-4 w-4 text-primary" />
                         DNA-Lang
                       </div>
                     </th>
-                    <th className="p-4 font-semibold text-muted-foreground">VS Code</th>
-                    <th className="p-4 font-semibold text-muted-foreground">JetBrains</th>
-                    <th className="p-4 font-semibold text-muted-foreground">Eclipse</th>
+                    <th className="text-center p-4 font-semibold text-muted-foreground">VS Code</th>
+                    <th className="text-center p-4 font-semibold text-muted-foreground">JetBrains</th>
+                    <th className="text-center p-4 font-semibold text-muted-foreground">Eclipse</th>
                   </tr>
                 </thead>
                 <tbody>
                   {industryComparison.map((row, i) => (
                     <tr key={row.feature} className={i % 2 === 0 ? "bg-muted/20" : ""}>
-                      <td className="p-4 text-sm font-medium">{row.feature}</td>
-                      <td className="p-4 text-center">
+                      <td className="p-4 font-medium">{row.feature}</td>
+                      <td className="text-center p-4">
                         {row.dnaLang ? (
                           <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-secondary/20">
                             <Check className="h-4 w-4 text-secondary" />
@@ -524,21 +600,21 @@ export default function Page() {
                           <span className="text-muted-foreground">—</span>
                         )}
                       </td>
-                      <td className="p-4 text-center">
+                      <td className="text-center p-4">
                         {row.vscode ? (
                           <Check className="h-4 w-4 text-muted-foreground mx-auto" />
                         ) : (
                           <span className="text-muted-foreground">—</span>
                         )}
                       </td>
-                      <td className="p-4 text-center">
+                      <td className="text-center p-4">
                         {row.jetbrains ? (
                           <Check className="h-4 w-4 text-muted-foreground mx-auto" />
                         ) : (
                           <span className="text-muted-foreground">—</span>
                         )}
                       </td>
-                      <td className="p-4 text-center">
+                      <td className="text-center p-4">
                         {row.eclipse ? (
                           <Check className="h-4 w-4 text-muted-foreground mx-auto" />
                         ) : (
@@ -551,51 +627,20 @@ export default function Page() {
               </table>
             </div>
           </Card>
-
-          {/* Unique value propositions */}
-          <div className="grid sm:grid-cols-3 gap-6 mt-10">
-            <Card className="p-6 border-primary/30">
-              <div className="p-2 rounded-lg bg-primary/10 w-fit mb-4">
-                <Cpu className="h-5 w-5 text-primary" />
-              </div>
-              <h3 className="font-semibold mb-2">Quantum Computing Ready</h3>
-              <p className="text-sm text-muted-foreground">
-                First IDE platform with native quantum debugging and coherence visualization.
-              </p>
-            </Card>
-            <Card className="p-6 border-secondary/30">
-              <div className="p-2 rounded-lg bg-secondary/10 w-fit mb-4">
-                <Sparkles className="h-5 w-5 text-secondary" />
-              </div>
-              <h3 className="font-semibold mb-2">Self-Evolving Code</h3>
-              <p className="text-sm text-muted-foreground">
-                Biological computing paradigms enable code that heals and optimizes itself.
-              </p>
-            </Card>
-            <Card className="p-6 border-accent/30">
-              <div className="p-2 rounded-lg bg-accent/10 w-fit mb-4">
-                <Palette className="h-5 w-5 text-accent" />
-              </div>
-              <h3 className="font-semibold mb-2">100% Customizable</h3>
-              <p className="text-sm text-muted-foreground">
-                Build exactly the IDE you need with our visual IDE builder and extension system.
-              </p>
-            </Card>
-          </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-muted/50 to-background border-t border-border">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-b from-primary/5 to-transparent">
         <div className="max-w-[800px] mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Ready to Build Your IDE?</h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Join thousands of developers creating custom development environments with DNA-Lang.
+          <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
+            Join thousands of developers creating next-generation development environments with biological computing.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/ide-platform">
               <Button size="lg" className="w-full sm:w-auto text-base h-12 px-8 gap-2">
-                <Dna className="h-4 w-4" />
+                <Play className="h-4 w-4" />
                 Get Started Free
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -604,7 +649,6 @@ export default function Page() {
               <Button size="lg" variant="outline" className="w-full sm:w-auto text-base h-12 px-8 gap-2 bg-transparent">
                 <BookOpen className="h-4 w-4" />
                 Read Documentation
-                <ExternalLink className="h-4 w-4" />
               </Button>
             </Link>
           </div>

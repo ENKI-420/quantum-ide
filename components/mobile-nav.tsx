@@ -35,6 +35,8 @@ import {
   BarChart3,
   Globe,
   Cpu,
+  Compass,
+  Radio,
 } from "lucide-react"
 
 const bottomNavItems = [
@@ -74,6 +76,9 @@ const menuSections = [
     title: "AI & Analytics",
     items: [
       { icon: MessageSquare, label: "AI Assistant", href: "/ai-assistant", description: "Quantum AI helper" },
+      { icon: Compass, label: "Osiris Bridge", href: "/osiris-bridge", description: "11D-CRSM PALS" },
+      { icon: Radio, label: "Osiris Copilot", href: "/osiris-copilot", description: "Holographic interface" },
+      { icon: Zap, label: "AAF Dashboard", href: "/aaf-dashboard", description: "Living Framework" },
       { icon: BarChart3, label: "Analytics", href: "/analytics", description: "Performance metrics" },
       { icon: Cpu, label: "Quantum OS", href: "/quantum-os", description: "System environment" },
     ],

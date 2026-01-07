@@ -39,6 +39,9 @@ import {
   Rocket,
   MessageSquare,
   X,
+  Compass,
+  Zap,
+  Radio,
 } from "lucide-react"
 
 const navGroups = [
@@ -139,6 +142,27 @@ const navGroups = [
         description: "Quantum AI helper",
         shortcut: "A I",
       },
+      {
+        href: "/osiris-bridge",
+        label: "Osiris Bridge",
+        icon: Compass,
+        description: "11D-CRSM PALS Cockpit",
+        shortcut: "A O",
+      },
+      {
+        href: "/osiris-copilot",
+        label: "Osiris Copilot",
+        icon: Radio,
+        description: "Holographic Command Sphere",
+        shortcut: "A C",
+      },
+      {
+        href: "/aaf-dashboard",
+        label: "AAF Dashboard",
+        icon: Zap,
+        description: "Adaptive Autopoietic Framework",
+        shortcut: "A F",
+      },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
         href: "/orchestrator",
@@ -198,6 +222,12 @@ export function Navigation() {
           window.location.href = "/ide-platform/docs"
         } else if (e.key === "a") {
           window.location.href = "/ai-assistant"
+        } else if (e.key === "o") {
+          window.location.href = "/osiris-bridge"
+        } else if (e.key === "f") {
+          window.location.href = "/aaf-dashboard"
+        } else if (e.key === "c") {
+          window.location.href = "/osiris-copilot"
         }
       }
     }
@@ -382,6 +412,18 @@ export function Navigation() {
                   <div className="flex justify-between text-sm">
                     <span>AI Assistant</span>
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + A</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Osiris Bridge</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + O</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Osiris Copilot</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + C</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>AAF Dashboard</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + F</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Documentation</span>
