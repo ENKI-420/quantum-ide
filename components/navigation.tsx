@@ -1,0 +1,409 @@
+"use client"
+
+import { useState, useEffect, useRef } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { CommandPalette } from "@/components/ui/command-palette"
+import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu"
+import {
+  Dna,
+  ChevronDown,
+  Network,
+  Cpu,
+  Atom,
+  FlaskConical,
+  Settings,
+  Layers,
+  Users,
+  Keyboard,
+  Workflow,
+  Search,
+  Code2,
+  Puzzle,
+  FolderTree,
+  Bug,
+  Terminal,
+  Palette,
+  Boxes,
+  BookOpen,
+  Plug,
+  Rocket,
+  MessageSquare,
+  X,
+} from "lucide-react"
+
+const navGroups = [
+  {
+    label: "IDE Platform",
+    items: [
+      {
+        href: "/ide-platform",
+        label: "Overview",
+        icon: Layers,
+        description: "IDE development platform",
+        shortcut: "I O",
+      },
+      {
+        href: "/ide-platform/editor",
+        label: "Genome Editor",
+        icon: Code2,
+        description: "DNA-Lang code editor",
+        shortcut: "I E",
+      },
+      {
+        href: "/ide-platform/circuit-designer",
+        label: "Circuit Designer",
+        icon: Workflow,
+        description: "Visual genome builder",
+        shortcut: "I C",
+      },
+      {
+        href: "/ide-platform/debugger",
+        label: "Debugger",
+        icon: Bug,
+        description: "Quantum debugging",
+        shortcut: "I D",
+      },
+      {
+        href: "/ide-platform/terminal",
+        label: "Terminal",
+        icon: Terminal,
+        description: "Quantum terminal",
+        shortcut: "I T",
+      },
+      {
+        href: "/ide-platform/projects",
+        label: "Projects",
+        icon: FolderTree,
+        description: "Project management",
+        shortcut: "I P",
+      },
+    ],
+  },
+  {
+    label: "Customize",
+    items: [
+      {
+        href: "/ide-platform/builder",
+        label: "IDE Builder",
+        icon: Palette,
+        description: "Workspace customizer",
+        shortcut: "C B",
+      },
+      {
+        href: "/ide-platform/templates",
+        label: "Templates",
+        icon: Boxes,
+        description: "Starter templates",
+        shortcut: "C T",
+      },
+      {
+        href: "/ide-platform/marketplace",
+        label: "Marketplace",
+        icon: Puzzle,
+        description: "Extensions & plugins",
+        shortcut: "C M",
+      },
+      {
+        href: "/ide-platform/integrations",
+        label: "Integrations",
+        icon: Plug,
+        description: "External tools",
+        shortcut: "C I",
+      },
+      {
+        href: "/ide-platform/settings",
+        label: "Settings",
+        icon: Settings,
+        description: "IDE configuration",
+        shortcut: "C S",
+      },
+    ],
+  },
+  {
+    label: "AI & Tools",
+    items: [
+      {
+        href: "/ai-assistant",
+        label: "AI Assistant",
+        icon: MessageSquare,
+        description: "Quantum AI helper",
+        shortcut: "A I",
+      },
+      { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
+      {
+        href: "/orchestrator",
+        label: "Orchestrator",
+        icon: Network,
+        description: "AIDEN|AURA control",
+        shortcut: "T R",
+      },
+      { href: "/ccce", label: "CCCE Engine", icon: Atom, description: "Coherence engine", shortcut: "T C" },
+    ],
+  },
+  {
+    label: "Resources",
+    items: [
+      {
+        href: "/ide-platform/docs",
+        label: "Documentation",
+        icon: BookOpen,
+        description: "Guides & API reference",
+        shortcut: "R D",
+      },
+      {
+        href: "/physics-research",
+        label: "Physics Lab",
+        icon: FlaskConical,
+        description: "DAG node editor",
+        shortcut: "R P",
+      },
+      { href: "/architecture", label: "Architecture", icon: Layers, description: "System overview", shortcut: "R A" },
+    ],
+  },
+]
+
+export function Navigation() {
+  const pathname = usePathname()
+  const [showShortcuts, setShowShortcuts] = useState(false)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "?" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault()
+        setShowShortcuts((prev) => !prev)
+        return
+      }
+
+      if (e.altKey) {
+        if (e.key === "h") {
+          window.location.href = "/"
+        } else if (e.key === "s") {
+          window.location.href = "/ide-platform/settings"
+        } else if (e.key === "i") {
+          window.location.href = "/ide-platform"
+        } else if (e.key === "e") {
+          window.location.href = "/ide-platform/editor"
+        } else if (e.key === "d") {
+          window.location.href = "/ide-platform/docs"
+        } else if (e.key === "a") {
+          window.location.href = "/ai-assistant"
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [])
+
+  return (
+    <>
+      {/* Command Palette */}
+      <CommandPalette />
+
+      <header
+        className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        role="banner"
+      >
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+          <div className="flex h-14 items-center justify-between">
+            {/* Logo */}
+            <Link
+              href="/"
+              className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md"
+              aria-label="DNA::}{::lang Home"
+            >
+              <div className="p-1.5 bg-primary/10 rounded-md">
+                <Dna className="h-5 w-5 text-primary" aria-hidden="true" />
+              </div>
+              <span className="font-semibold text-sm hidden sm:block">
+                <span className="dnalang-gradient">DNA::&#125;&#123;::lang</span>
+              </span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-1" role="navigation" aria-label="Main navigation">
+              {navGroups.map((group) => (
+                <DropdownMenu key={group.label}>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="nav-link gap-1"
+                      aria-expanded="false"
+                      aria-haspopup="menu"
+                    >
+                      {group.label}
+                      <ChevronDown className="h-3 w-3" aria-hidden="true" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    <DropdownMenuLabel className="text-xs text-muted-foreground">{group.label}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {group.items.map((item) => (
+                      <DropdownMenuItem key={item.href} asChild>
+                        <Link
+                          href={item.href}
+                          className="flex items-center gap-3 cursor-pointer"
+                          aria-current={pathname === item.href ? "page" : undefined}
+                        >
+                          <item.icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                          <div className="flex-1">
+                            <div className="text-sm font-medium">{item.label}</div>
+                            <div className="text-xs text-muted-foreground">{item.description}</div>
+                          </div>
+                          {item.shortcut && (
+                            <kbd className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded text-muted-foreground">
+                              {item.shortcut}
+                            </kbd>
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ))}
+
+              <Link href="/research-gateway">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="nav-link"
+                  aria-current={pathname === "/research-gateway" ? "page" : undefined}
+                >
+                  <Users className="h-4 w-4 mr-1" aria-hidden="true" />
+                  Community
+                </Button>
+              </Link>
+            </nav>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  const event = new KeyboardEvent("keydown", { key: "k", metaKey: true })
+                  window.dispatchEvent(event)
+                }}
+                aria-label="Open command palette"
+              >
+                <Search className="h-4 w-4" aria-hidden="true" />
+                <kbd className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">⌘K</kbd>
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden sm:flex"
+                onClick={() => setShowShortcuts((prev) => !prev)}
+                aria-label="Toggle keyboard shortcuts"
+                aria-pressed={showShortcuts}
+              >
+                <Keyboard className="h-4 w-4" aria-hidden="true" />
+              </Button>
+
+              <Link href="/ide-platform/settings" className="hidden sm:block">
+                <Button variant="ghost" size="sm" aria-label="Settings">
+                  <Settings className="h-4 w-4" aria-hidden="true" />
+                </Button>
+              </Link>
+
+              <Link href="/ide-platform">
+                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Rocket className="h-4 w-4 mr-1.5" aria-hidden="true" />
+                  <span className="hidden sm:inline">Launch IDE</span>
+                  <span className="sm:hidden">IDE</span>
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Breadcrumb - shows on subpages */}
+          {pathname !== "/" && (
+            <div className="pb-2 -mt-1 hidden sm:block">
+              <BreadcrumbNav />
+            </div>
+          )}
+        </div>
+      </header>
+
+      {showShortcuts && (
+        <div
+          className="fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setShowShortcuts(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="shortcuts-title"
+        >
+          <div
+            className="bg-card border border-border rounded-xl p-6 max-w-md w-full shadow-xl animate-fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 id="shortcuts-title" className="text-lg font-semibold">
+                Keyboard Shortcuts
+              </h2>
+              <Button variant="ghost" size="sm" onClick={() => setShowShortcuts(false)} aria-label="Close">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">Global</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Command Palette</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">⌘ K</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Go to Home</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + H</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>IDE Platform</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + I</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Genome Editor</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + E</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>AI Assistant</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + A</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Documentation</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + D</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Settings</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + S</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Show Shortcuts</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">?</kbd>
+                  </div>
+                </div>
+              </div>
+              <div className="pt-2 border-t border-border text-xs text-muted-foreground">
+                Press <kbd className="font-mono bg-muted px-1 rounded">Esc</kbd> to close this dialog
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
