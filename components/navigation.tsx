@@ -45,6 +45,9 @@ import {
   Bot,
   Swords,
   CreditCard,
+  Globe,
+  Sparkles,
+  FileText,
 } from "lucide-react"
 
 const navGroups = [
@@ -64,6 +67,13 @@ const navGroups = [
         icon: Code2,
         description: "DNA-Lang code editor",
         shortcut: "I E",
+      },
+      {
+        href: "/dna-notebook",
+        label: "DNA Notebook",
+        icon: FileText,
+        description: "Colab-style notebooks",
+        shortcut: "I N",
       },
       {
         href: "/ide-platform/circuit-designer",
@@ -118,6 +128,13 @@ const navGroups = [
         icon: Swords,
         description: "AI coding battles",
         shortcut: "S C",
+      },
+      {
+        href: "/dev-swarm-arena",
+        label: "Dev Swarm Arena",
+        icon: Sparkles,
+        description: "Autonomous swarm coding",
+        shortcut: "S W",
       },
       {
         href: "/osiris-copilot",
@@ -214,6 +231,13 @@ const navGroups = [
         shortcut: "R D",
       },
       {
+        href: "/framework",
+        label: "Framework",
+        icon: Globe,
+        description: "Unified Field Physics",
+        shortcut: "R F",
+      },
+      {
         href: "/pricing",
         label: "Pricing",
         icon: CreditCard,
@@ -266,6 +290,12 @@ export function Navigation() {
           window.location.href = "/osiris-copilot"
         } else if (e.key === "$") {
           window.location.href = "/pricing"
+        } else if (e.key === "g") {
+          window.location.href = "/framework"
+        } else if (e.key === "w") {
+          window.location.href = "/dev-swarm-arena"
+        } else if (e.key === "n") {
+          window.location.href = "/dna-notebook"
         }
       }
     }
@@ -452,6 +482,10 @@ export function Navigation() {
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + E</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
+                    <span>DNA Notebook</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + N</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
                     <span>AI Assistant</span>
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + A</kbd>
                   </div>
@@ -466,6 +500,14 @@ export function Navigation() {
                   <div className="flex justify-between text-sm">
                     <span>AAF Dashboard</span>
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + F</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Framework</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + G</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Dev Swarm Arena</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + W</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Documentation</span>
