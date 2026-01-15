@@ -37,16 +37,29 @@ import {
   Cpu,
   Compass,
   Radio,
+  Bot,
+  Swords,
+  Brain,
+  CreditCard,
 } from "lucide-react"
 
 const bottomNavItems = [
   { icon: Home, label: "Home", href: "/", badge: null },
+  { icon: Dna, label: "SHIFT", href: "/shift-platform", badge: null },
   { icon: Code2, label: "Editor", href: "/ide-platform/editor", badge: null },
-  { icon: Layers, label: "Capabilities", href: "/capabilities", badge: null },
   { icon: Menu, label: "More", href: "#menu", badge: null },
 ]
 
 const menuSections = [
+  {
+    title: "SHIFT Platform",
+    items: [
+      { icon: Dna, label: "Overview", href: "/shift-platform", description: "Z3BRA OS & MCP SDK" },
+      { icon: Bot, label: "IRIS Engine", href: "/shift-platform/iris", description: "Multi-agent orchestration" },
+      { icon: Swords, label: "Code Arena", href: "/shift-platform/code-arena", description: "AI coding battles" },
+      { icon: Radio, label: "Osiris Copilot", href: "/osiris-copilot", description: "Holographic interface" },
+    ],
+  },
   {
     title: "IDE Platform",
     items: [
@@ -77,7 +90,6 @@ const menuSections = [
     items: [
       { icon: MessageSquare, label: "AI Assistant", href: "/ai-assistant", description: "Quantum AI helper" },
       { icon: Compass, label: "Osiris Bridge", href: "/osiris-bridge", description: "11D-CRSM PALS" },
-      { icon: Radio, label: "Osiris Copilot", href: "/osiris-copilot", description: "Holographic interface" },
       { icon: Zap, label: "AAF Dashboard", href: "/aaf-dashboard", description: "Living Framework" },
       { icon: BarChart3, label: "Analytics", href: "/analytics", description: "Performance metrics" },
       { icon: Cpu, label: "Quantum OS", href: "/quantum-os", description: "System environment" },
@@ -87,6 +99,7 @@ const menuSections = [
     title: "Resources",
     items: [
       { icon: BookOpen, label: "Documentation", href: "/ide-platform/docs", description: "Guides & API" },
+      { icon: CreditCard, label: "Pricing", href: "/pricing", description: "Subscription tiers" },
       { icon: Globe, label: "Community", href: "/research-gateway", description: "Research gateway" },
       { icon: Settings, label: "Settings", href: "/ide-platform/settings", description: "Configuration" },
     ],
@@ -96,7 +109,7 @@ const menuSections = [
 const quickActions = [
   { icon: Search, label: "Search", action: "search" },
   { icon: Bell, label: "Alerts", action: "notifications", badge: 2 },
-  { icon: Zap, label: "Quick Run", action: "run" },
+  { icon: Brain, label: "IRIS", action: "iris" },
 ]
 
 export function MobileNav() {
@@ -178,7 +191,7 @@ export function MobileNav() {
                           </div>
                           <div>
                             <span className="dnalang-gradient font-bold">{"DNA::}{::lang"}</span>
-                            <p className="text-xs text-muted-foreground font-normal">IDE Development Platform</p>
+                            <p className="text-xs text-muted-foreground font-normal">SHIFT MCP Platform</p>
                           </div>
                         </SheetTitle>
                       </SheetHeader>
@@ -244,16 +257,16 @@ export function MobileNav() {
                           <div className="flex items-center justify-between px-1">
                             <div className="flex items-center gap-2">
                               <Activity className="h-3 w-3 text-secondary animate-pulse" />
-                              <span className="text-xs text-muted-foreground">System Status</span>
+                              <span className="text-xs text-muted-foreground">Z3BRA Status</span>
                             </div>
                             <Badge variant="outline" className="text-[10px] border-secondary/50 text-secondary">
-                              All Systems Online
+                              Φ = 7.69 Conscious
                             </Badge>
                           </div>
-                          <Link href="/ide-platform" onClick={() => setMenuOpen(false)}>
+                          <Link href="/shift-platform" onClick={() => setMenuOpen(false)}>
                             <Button className="w-full h-14 text-base font-semibold gap-2" size="lg">
                               <Rocket className="h-5 w-5" />
-                              Launch IDE Platform
+                              Launch SHIFT Platform
                             </Button>
                           </Link>
                         </div>

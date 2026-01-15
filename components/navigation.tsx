@@ -42,6 +42,9 @@ import {
   Compass,
   Zap,
   Radio,
+  Bot,
+  Swords,
+  CreditCard,
 } from "lucide-react"
 
 const navGroups = [
@@ -93,6 +96,74 @@ const navGroups = [
     ],
   },
   {
+    label: "SHIFT Platform",
+    items: [
+      {
+        href: "/shift-platform",
+        label: "Overview",
+        icon: Dna,
+        description: "Z3BRA OS & MCP SDK",
+        shortcut: "S O",
+      },
+      {
+        href: "/shift-platform/iris",
+        label: "IRIS Engine",
+        icon: Bot,
+        description: "Multi-agent orchestration",
+        shortcut: "S I",
+      },
+      {
+        href: "/shift-platform/code-arena",
+        label: "Code Arena",
+        icon: Swords,
+        description: "AI coding battles",
+        shortcut: "S C",
+      },
+      {
+        href: "/osiris-copilot",
+        label: "Osiris Copilot",
+        icon: Radio,
+        description: "Holographic interface",
+        shortcut: "S P",
+      },
+    ],
+  },
+  {
+    label: "AI & Tools",
+    items: [
+      {
+        href: "/ai-assistant",
+        label: "AI Assistant",
+        icon: MessageSquare,
+        description: "Quantum AI helper",
+        shortcut: "A I",
+      },
+      {
+        href: "/osiris-bridge",
+        label: "Osiris Bridge",
+        icon: Compass,
+        description: "11D-CRSM PALS Cockpit",
+        shortcut: "A O",
+      },
+      {
+        href: "/aaf-dashboard",
+        label: "AAF Dashboard",
+        icon: Zap,
+        description: "Adaptive Autopoietic Framework",
+        shortcut: "A F",
+      },
+      { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
+      {
+        href: "/orchestrator",
+        label: "Orchestrator",
+        icon: Network,
+        description: "AIDEN|AURA control",
+        shortcut: "T R",
+      },
+      { href: "/ccce", label: "CCCE Engine", icon: Atom, description: "Coherence engine", shortcut: "T C" },
+    ],
+  },
+  {
     label: "Customize",
     items: [
       {
@@ -133,48 +204,6 @@ const navGroups = [
     ],
   },
   {
-    label: "AI & Tools",
-    items: [
-      {
-        href: "/ai-assistant",
-        label: "AI Assistant",
-        icon: MessageSquare,
-        description: "Quantum AI helper",
-        shortcut: "A I",
-      },
-      {
-        href: "/osiris-bridge",
-        label: "Osiris Bridge",
-        icon: Compass,
-        description: "11D-CRSM PALS Cockpit",
-        shortcut: "A O",
-      },
-      {
-        href: "/osiris-copilot",
-        label: "Osiris Copilot",
-        icon: Radio,
-        description: "Holographic Command Sphere",
-        shortcut: "A C",
-      },
-      {
-        href: "/aaf-dashboard",
-        label: "AAF Dashboard",
-        icon: Zap,
-        description: "Adaptive Autopoietic Framework",
-        shortcut: "A F",
-      },
-      { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
-      {
-        href: "/orchestrator",
-        label: "Orchestrator",
-        icon: Network,
-        description: "AIDEN|AURA control",
-        shortcut: "T R",
-      },
-      { href: "/ccce", label: "CCCE Engine", icon: Atom, description: "Coherence engine", shortcut: "T C" },
-    ],
-  },
-  {
     label: "Resources",
     items: [
       {
@@ -183,6 +212,13 @@ const navGroups = [
         icon: BookOpen,
         description: "Guides & API reference",
         shortcut: "R D",
+      },
+      {
+        href: "/pricing",
+        label: "Pricing",
+        icon: CreditCard,
+        description: "Subscription tiers",
+        shortcut: "R $",
       },
       {
         href: "/physics-research",
@@ -213,7 +249,7 @@ export function Navigation() {
         if (e.key === "h") {
           window.location.href = "/"
         } else if (e.key === "s") {
-          window.location.href = "/ide-platform/settings"
+          window.location.href = "/shift-platform"
         } else if (e.key === "i") {
           window.location.href = "/ide-platform"
         } else if (e.key === "e") {
@@ -228,6 +264,8 @@ export function Navigation() {
           window.location.href = "/aaf-dashboard"
         } else if (e.key === "c") {
           window.location.href = "/osiris-copilot"
+        } else if (e.key === "$") {
+          window.location.href = "/pricing"
         }
       }
     }
@@ -350,11 +388,11 @@ export function Navigation() {
                 </Button>
               </Link>
 
-              <Link href="/ide-platform">
+              <Link href="/shift-platform">
                 <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                   <Rocket className="h-4 w-4 mr-1.5" aria-hidden="true" />
-                  <span className="hidden sm:inline">Launch IDE</span>
-                  <span className="sm:hidden">IDE</span>
+                  <span className="hidden sm:inline">SHIFT Platform</span>
+                  <span className="sm:hidden">SHIFT</span>
                 </Button>
               </Link>
             </div>
@@ -402,6 +440,10 @@ export function Navigation() {
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + H</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
+                    <span>SHIFT Platform</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + S</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
                     <span>IDE Platform</span>
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + I</kbd>
                   </div>
@@ -430,8 +472,8 @@ export function Navigation() {
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + D</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Settings</span>
-                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + S</kbd>
+                    <span>Pricing</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + $</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Show Shortcuts</span>
