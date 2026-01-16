@@ -48,6 +48,7 @@ import {
   Globe,
   Sparkles,
   FileText,
+  Shield,
 } from "lucide-react"
 
 const navGroups = [
@@ -238,6 +239,13 @@ const navGroups = [
         shortcut: "R F",
       },
       {
+        href: "/sovereign-stack",
+        label: "Sovereign Stack",
+        icon: Shield,
+        description: "SSRA & Triadic Governance",
+        shortcut: "R S",
+      },
+      {
         href: "/pricing",
         label: "Pricing",
         icon: CreditCard,
@@ -296,6 +304,8 @@ export function Navigation() {
           window.location.href = "/dev-swarm-arena"
         } else if (e.key === "n") {
           window.location.href = "/dna-notebook"
+        } else if (e.key === "v") {
+          window.location.href = "/sovereign-stack"
         }
       }
     }
@@ -516,6 +526,10 @@ export function Navigation() {
                   <div className="flex justify-between text-sm">
                     <span>Pricing</span>
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + $</kbd>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Sovereign Stack</span>
+                    <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + V</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Show Shortcuts</span>
