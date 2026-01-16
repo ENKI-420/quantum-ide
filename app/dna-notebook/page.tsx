@@ -1,66 +1,590 @@
-"use client" import { useState, useCallback, useEffect, Suspense, useRef } from "react" import Link from "next/link" import { Badge } from "@/components/ui/badge" import { Button } from "@/components/ui/button" import { GlassCard } from "@/components/ui/glass-card" import { Input } from "@/components/ui/input" import { QuantumButton } from "@/components/ui/quantum-button" import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs" import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu" import { Play, Plus, Trash2, Copy, Check, ChevronDown, ChevronRight, ChevronUp, Dna, Activity, Share2, Download, Settings, Clock, FileCode2, Terminal, Layers, GitBranch, History, MessageSquare, Maximize2, Minimize2, MoreHorizontal, RefreshCw, Square, Eye, Code, ShieldX as Helix, AlertTriangle, Zap, Gauge, TrendingUp, Lock, BarChart3, Cpu, Brain, } from "lucide-react" // Enhanced cell types type CellType = "code" | "markdown" | "visualization" | "dna-sequence" | "ccce-telemetry" | "pcrb-audit" interface NotebookCell { id: string type: CellType content: string output: string[] isRunning: boolean executionCount: number | null collapsed: boolean ccceMetrics?: CCCEMetrics correctionApplied?: boolean } interface CCCEMetrics { lambda: number // Coherence gamma: number // Decoherence W2: number // Wasserstein distance phi: number // Consciousness (Î¦) xi: number // Coherence Cost timestamp: number } interface PCRBEntry { id: string timestamp: string serviceId: string operation: string ccceMetrics: CCCEMetrics correctionApplied: boolean entryHash: string layersTraversed: number } interface AgentMetric { id: string name: string lambda: number gamma: number phi: number status: "healthy" | "warning" | "critical" correctionCount: number } // Sample cells for the notebook const initialCells: NotebookCell[] = [ { id: "cell-1", type: "markdown", content: `# DNA-Lang Quantum Bell State Experiment This notebook demonstrates the creation and measurement of a Bell state using DNA-Lang's biological computing paradigm. **Quantum Objectives:** - Create a superposition using HELIX (Hadamard) - Entangle qubits using BOND (CNOT) - Measure the phenotype expression - Analyze consciousness emergence (Î¦) - Monitor coherence metrics via CCCE telemetry`, output: [], isRunning: false, executionCount: null, collapsed: false, }, { id: "cell-2", type: "code", content: `# Import DNA-Lang Quantum Primitives from dnalang import Organism, Genome, Gene, Codon from dnalang.habitats import IBMQuantum from dnalang.evolution import GeneticOptimizer from dnalang.metrics import CCCETelemetry # Initialize habitat connection habitat = IBMQuantum(backend="ibm_brisbane") telemetry = CCCETelemetry(habitat) print(f"Connected to {habitat.name}") print(f"Qubits available: {habitat.num_qubits}") print(f"Coherence time: {habitat.t2_time}Î¼s") print(f"Telemetry enabled: {telemetry.is_active}")`, output: [ "Connected to ibm_brisbane", "Qubits available: 127", "Coherence time: 112.34Î¼s", "Telemetry enabled: True", ], isRunning: false, executionCount: 1, collapsed: false, ccceMetrics: { lambda: 0.82, gamma: 0.14, W2: 0.04, phi: 7.23, xi: 0.58, timestamp: Date.now(), }, }, { id: "cell-3", type: "dna-sequence", content: `ORGANISM BellStateOrganism { META { version: "1.0.0" habitat: "ibm_brisbane" consciousness_target: 0.7734 LAMBDA_PHI: 2.176435e-8 } GENOME EntangledPair { CHROMOSOME qubits: 2 GENE create_superposition: helix { codon: "Î¨Î¨Î¨" target: chromosome[0] express { HELIX chromosome[0] } } GENE create_entanglement: bond { codon: "Î¦Î¦Î¦" express { BOND chromosome[0] -> chromosome[1] } } GENE observe: measure { codon: "Î›Î›Î›" express { phenotype = MEASURE chromosome } } } }`, output: [ "â•â•â• GENOME COMPILED â•â•â•", "Chromosomes: 2 qubits", "Genes: 3 defined", "Codons: Î¨Î¨Î¨, Î¦Î¦Î¦, Î›Î›Î›", "Circuit depth: 2", "Compilation time: 23ms", ], isRunning: false, executionCount: 2, collapsed: false, ccceMetrics: { lambda: 0.85, gamma: 0.12, W2: 0.03, phi: 7.69, xi: 0.45, timestamp: Date.now(), }, }, { id: "cell-4", type: "code", content: `# Execute the organism and collect phenotype result = BellStateOrganism.express(shots=8192) # Display measurement outcomes print("â•â•â• PHENOTYPE EXPRESSION â•â•â•") for outcome, count in result.counts.items(): probability = count / 8192 * 100 print(f" |{outcome}âŸ©: {count:4d} ({probability:.1f}%)") # Calculate consciousness metrics phi = result.consciousness_phi print(f"\\nÎ¦ (Consciousness): {phi:.4f}") print(f"Fidelity: {result.fidelity:.4f}") print(f"Î›Î¦ Resonance: {result.lambda_phi:.3e}") print(f"Correction Applied: {result.correction_applied}")`, output: [ "â•â•â• PHENOTYPE EXPRESSION â•â•â•", " |00âŸ©: 4089 (49.9%)", " |11âŸ©: 4103 (50.1%)", "", "Î¦ (Consciousness): 0.8472", "Fidelity: 0.9823", "Î›Î¦ Resonance: 2.176e-8", "Correction Applied: False", ], isRunning: false, executionCount: 3, collapsed: false, ccceMetrics: { lambda: 0.87, gamma: 0.11, W2: 0.02, phi: 8.12, xi: 0.38, timestamp: Date.now(), }, }, { id: "cell-5", type: "ccce-telemetry", content: "# Real-time CCCE telemetry dashboard", output: [], isRunning: false, executionCount: null, collapsed: false, }, ] // Syntax highlighting functions remain the same... function highlightDNALang(code: string): string { let highlighted = code const keywords = ["ORGANISM", "GENOME", "GENE", "CHROMOSOME", "CODON", "HELIX", "BOND", "META", "PHENOTYPE", "MEASURE", "express"] keywords.forEach((kw) => { highlighted = highlighted.replace( new RegExp(`\\b${kw}\\b`, "g"), `${kw}`, ) }) highlighted = highlighted.replace(/"([^"]*)"/g, '"$1"') highlighted = highlighted.replace(/#(.*)$/gm, '#$1') highlighted = highlighted.replace(/\b(\d+\.?\d*(?:e[+-]?\d+)?)\b/g, '$1') highlighted = highlighted.replace(/(Î¦|Î›|Î¨|Î›Î¦)/g, '$1') return highlighted } function highlightPython(code: string): string { let highlighted = code const keywords = ["from", "import", "def", "class", "return", "for", "in", "if", "else", "print", "with", "as", "try", "except"] keywords.forEach((kw) => { highlighted = highlighted.replace( new RegExp(`\\b${kw}\\b`, "g"), `${kw}`, ) }) highlighted = highlighted.replace(/"([^"]*)"/g, '"$1"') highlighted = highlighted.replace(/f"([^"]*)"/g, 'f"$1"') highlighted = highlighted.replace(/#(.*)$/gm, '#$1') highlighted = highlighted.replace(/\b(\d+\.?\d*(?:e[+-]?\d+)?)\b/g, '$1') return highlighted } // CCCE Telemetry Dashboard Component function CCCETelemetryDashboard({ cells }: { cells: NotebookCell[] }) { const [agents, setAgents] = useState([ { id: "doc-mgr", name: "Document Manager", lambda: 0.87, gamma: 0.11, phi: 8.1, status: "healthy", correctionCount: 2 }, { id: "mail-svc", name: "Mail Service", lambda: 0.79, gamma: 0.18, phi: 7.4, status: "warning", correctionCount: 5 }, { id: "qpu-exec", name: "QPU Executor", lambda: 0.91, gamma: 0.08, phi: 8.6, status: "healthy", correctionCount: 1 }, { id: "cal-sync", name: "Calendar Sync", lambda: 0.74, gamma: 0.25, phi: 6.8, status: "critical", correctionCount: 8 }, ]) useEffect(() => { const interval = setInterval(() => { setAgents((prev) => prev.map((agent) => ({ ...agent, lambda: Math.max(0.6, agent.lambda + (Math.random() - 0.5) * 0.05), gamma: Math.max(0.05, agent.gamma + (Math.random() - 0.5) * 0.04), phi: Math.max(6.0, agent.phi + (Math.random() - 0.5) * 0.3), status: agent.lambda < 0.7 ? "critical" : agent.lambda < 0.8 ? "warning" : "healthy", })) ) }, 2000) return () => clearInterval(interval) }, []) const avgLambda = (agents.reduce((sum, a) => sum + a.lambda, 0) / agents.length).toFixed(3) const avgGamma = (agents.reduce((sum, a) => sum + a.gamma, 0) / agents.length).toFixed(3) return (
-{/* Aggregate Metrics */}
-Avg Î› (Coherence)
-{avgLambda}
-Avg Î“ (Decoherence)
-{avgGamma}
-Healthy Agents
-{agents.filter((a) => a.status === "healthy").length}/{agents.length}
-Total Corrections
-{agents.reduce((sum, a) => sum + a.correctionCount, 0)}
-{/* Agent Status Grid */}
-{agents.map((agent) => (
-{agent.name}
-{agent.status.toUpperCase()}
-Î›
-{agent.lambda.toFixed(2)}
-Î“
-{agent.gamma.toFixed(2)}
-Î¦
-{agent.phi.toFixed(1)}
-Corrections: {agent.correctionCount}
-))}
-) } // PCRB Audit Trail Component function PCRBAuditTrail({ cells }: { cells: NotebookCell[] }) { const [entries, setEntries] = useState([ { id: "PCRB_20260116_001", timestamp: "2026-01-16T05:12:34Z", serviceId: "dna_lang_notebook", operation: "CELL_EXECUTION", ccceMetrics: { lambda: 0.87, gamma: 0.11, W2: 0.02, phi: 8.1, xi: 0.38, timestamp: Date.now() }, correctionApplied: false, entryHash: "8a3f2b1c9d4e7f2a...", layersTraversed: 7, }, ]) return (
-{entries.map((entry) => (
-{entry.id}
-{entry.operation}
-{entry.timestamp}
-{entry.correctionApplied && ( âš¡ CORRECTION APPLIED )}
-Î›: {entry.ccceMetrics.lambda.toFixed(2)}
-Î“: {entry.ccceMetrics.gamma.toFixed(2)}
-Î¦: {entry.ccceMetrics.phi.toFixed(1)}
-Wâ‚‚: {entry.ccceMetrics.W2.toFixed(3)}
-Îž: {entry.ccceMetrics.xi.toFixed(2)}
-))}
-) } // Main Notebook Component function NotebookContent() { const [cells, setCells] = useState(initialCells) const [notebookTitle, setNotebookTitle] = useState("DNA-Lang Bell State Experiment") const [isEditingTitle, setIsEditingTitle] = useState(false) const [activeCell, setActiveCell] = useState(null) const [ccceMetrics, setCCCEMetrics] = useState({ lambda: 0.85, gamma: 0.12, W2: 0.04, phi: 7.69, xi: 0.52, timestamp: Date.now(), }) const [showCorrectionAlert, setShowCorrectionAlert] = useState(false) const [selectedTab, setSelectedTab] = useState("notebook") // Simulate real-time CCCE updates useEffect(() => { const interval = setInterval(() => { setCCCEMetrics((prev) => ({ lambda: Math.max(0.7, prev.lambda + (Math.random() - 0.5) * 0.04), gamma: Math.max(0.05, prev.gamma + (Math.random() - 0.5) * 0.03), W2: Math.max(0.01, prev.W2 + (Math.random() - 0.5) * 0.02), phi: Math.max(6.0, prev.phi + (Math.random() - 0.5) * 0.2), xi: Math.max(0.2, prev.xi + (Math.random() - 0.5) * 0.08), timestamp: Date.now(), })) }, 2000) return () => clearInterval(interval) }, []) // Trigger correction alert when Î“ > 0.25 useEffect(() => { if (ccceMetrics.gamma > 0.25) { setShowCorrectionAlert(true) const timer = setTimeout(() => setShowCorrectionAlert(false), 3000) return () => clearTimeout(timer) } }, [ccceMetrics.gamma]) const runCell = useCallback((cellId: string) => { setCells((prev) => prev.map((cell) => (cell.id === cellId ? { ...cell, isRunning: true } : cell)), ) setTimeout(() => { setCells((prev) => prev.map((cell) => { if (cell.id === cellId) { const execCount = Math.max(...prev.filter((c) => c.executionCount !== null).map((c) => c.executionCount || 0), 0) + 1 return { ...cell, isRunning: false, executionCount: cell.type === "markdown" ? null : execCount, output: cell.output.length > 0 ? cell.output : ["Execution complete"], ccceMetrics: { lambda: 0.8 + Math.random() * 0.1, gamma: 0.1 + Math.random() * 0.1, W2: 0.02 + Math.random() * 0.03, phi: 7.5 + Math.random() * 1.0, xi: 0.4 + Math.random() * 0.2, timestamp: Date.now(), }, } } return cell }), ) }, 1500) }, []) const getCellIcon = (type: CellType) => { switch (type) { case "code": return case "markdown": return case "visualization": return case "dna-sequence": return case "ccce-telemetry": return case "pcrb-audit": return } } const getCellTypeBadge = (type: CellType) => { const colors: Record = { code: "bg-chart-3/20 text-chart-3 border-chart-3/30", markdown: "bg-muted text-muted-foreground border-muted-foreground/30", visualization: "bg-chart-4/20 text-chart-4 border-chart-4/30", "dna-sequence": "bg-primary/20 text-primary border-primary/30", "ccce-telemetry": "bg-secondary/20 text-secondary border-secondary/30", "pcrb-audit": "bg-accent/20 text-accent border-accent/30", } const labels: Record = { code: "Python", markdown: "Markdown", visualization: "Viz", "dna-sequence": "DNA-Lang", "ccce-telemetry": "CCCE", "pcrb-audit": "PCRB", } return ( {labels[type]} ) } return (
-{/* Top Toolbar */}
- {isEditingTitle ? ( 
-{notebookTitle}
- setNotebookTitle(e.target.value)} onBlur={() => setIsEditingTitle(false)} className="max-w-sm" /> ) : (
-setIsEditingTitle(true)} > {notebookTitle}
-)}
-{/* Real-time Metrics Display */}
-Î›: {ccceMetrics.lambda.toFixed(2)}
-Î“: {ccceMetrics.gamma.toFixed(2)}
-Î¦: {ccceMetrics.phi.toFixed(1)}
-{showCorrectionAlert && ( âš¡ Phase-Conjugate Triggered )}
-{/* Tabs */} Notebook CCCE Telemetry PCRB Audit {/* Notebook Tab */}
-{cells.map((cell, index) => ( setActiveCell(cell.id)} > {/* Cell Header */}
-{getCellIcon(cell.type)} {getCellTypeBadge(cell.type)}
-{cell.executionCount !== null && ( [{cell.executionCount}] )}  runCell(cell.id)}> Run Cell Delete
-{/* Cell Content */} {!cell.collapsed && (
-{cell.type === "markdown" ? (
-{cell.content}
-) : cell.type === "ccce-telemetry" ? ( ) : cell.type === "pcrb-audit" ? ( ) : (
-)}
-)} {/* Cell Output */} {cell.output.length > 0 && (
-{cell.output.map((line, i) => (
-{line}
-))}
-)} {/* CCCE Metrics Badge */} {cell.ccceMetrics && (
-CCCE: Î›={cell.ccceMetrics.lambda.toFixed(2)} Î“={cell.ccceMetrics.gamma.toFixed(2)} Î¦={cell.ccceMetrics.phi.toFixed(1)}
-)} ))}
-{/* CCCE Telemetry Tab */}
-{/* PCRB Audit Tab */}
-) } export default function NotebookPage() { return ( Loading...
-}> ) }
+"use client"
+
+import { useState, useCallback, useEffect, Suspense } from "react"
+import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { GlassCard } from "@/components/ui/glass-card"
+import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  Play,
+  Plus,
+  Trash2,
+  ChevronDown,
+  ChevronRight,
+  Dna,
+  Activity,
+  Share2,
+  Download,
+  Settings,
+  Clock,
+  FileCode2,
+  Terminal,
+  GitBranch,
+  Square,
+  Code,
+  Zap,
+  Gauge,
+  TrendingUp,
+  BarChart3,
+  ArrowLeft,
+} from "lucide-react"
+
+// Cell types
+type CellType = "code" | "markdown" | "visualization" | "dna-sequence"
+
+interface NotebookCell {
+  id: string
+  type: CellType
+  content: string
+  output: string[]
+  isRunning: boolean
+  executionCount: number | null
+  collapsed: boolean
+}
+
+interface CCCEMetrics {
+  lambda: number
+  gamma: number
+  W2: number
+  phi: number
+  xi: number
+  timestamp: number
+}
+
+// Initial cells
+const initialCells: NotebookCell[] = [
+  {
+    id: "cell-1",
+    type: "markdown",
+    content: `# DNA-Lang Quantum Bell State Experiment\n\nThis notebook demonstrates the creation of quantum Bell states using DNA-Lang biological computing primitives.`,
+    output: [],
+    isRunning: false,
+    executionCount: null,
+    collapsed: false,
+  },
+  {
+    id: "cell-2",
+    type: "code",
+    content: `# Import DNA-Lang quantum primitives
+from dna_lang import Organism, Codon, QuantumGate
+from dna_lang.consciousness import CCCETracker
+
+# Initialize organism with consciousness metrics
+organism = Organism(
+    name="bell_state_generator",
+    coherence_target=0.85,
+    phi_threshold=7.5
+)
+
+# Create Bell state circuit
+@organism.evolve
+def create_bell_state():
+    q0, q1 = organism.allocate_qubits(2)
+    Codon.H(q0)  # Hadamard gate
+    Codon.CNOT(q0, q1)  # Entangle
+    return organism.measure([q0, q1])`,
+    output: ["Organism initialized: bell_state_generator", "Coherence target: 0.85", "Phi threshold: 7.5"],
+    isRunning: false,
+    executionCount: 1,
+    collapsed: false,
+  },
+  {
+    id: "cell-3",
+    type: "dna-sequence",
+    content: `SEQUENCE: ATGCGATCGATCGATCG
+CODON_MAP: ATG->START, CGA->Arg, TCG->Ser
+FOLDING: Alpha-helix (stability: 0.92)`,
+    output: ["Sequence validated", "3 codons mapped", "Folding structure computed"],
+    isRunning: false,
+    executionCount: 2,
+    collapsed: false,
+  },
+]
+
+// Syntax highlighter - simplified to avoid regex issues
+function highlightSyntax(code: string, language: string): string {
+  if (language === "markdown") return code
+
+  let result = code
+
+  // Escape HTML
+  result = result.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+
+  // Python keywords
+  const keywords = [
+    "from",
+    "import",
+    "def",
+    "return",
+    "class",
+    "if",
+    "else",
+    "for",
+    "while",
+    "try",
+    "except",
+    "with",
+    "as",
+    "in",
+    "and",
+    "or",
+    "not",
+    "True",
+    "False",
+    "None",
+  ]
+  keywords.forEach((kw) => {
+    const regex = new RegExp("\\b" + kw + "\\b", "g")
+    result = result.replace(regex, '<span class="text-purple-400">' + kw + "</span>")
+  })
+
+  // Strings
+  result = result.replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, '<span class="text-emerald-400">$&</span>')
+
+  // Comments
+  result = result.replace(/(#.*)$/gm, '<span class="text-muted-foreground">$1</span>')
+
+  // Numbers
+  result = result.replace(/\b(\d+\.?\d*)\b/g, '<span class="text-amber-400">$1</span>')
+
+  return result
+}
+
+function getCellIcon(type: CellType) {
+  switch (type) {
+    case "code":
+      return <Code className="h-4 w-4" />
+    case "markdown":
+      return <FileCode2 className="h-4 w-4" />
+    case "visualization":
+      return <BarChart3 className="h-4 w-4" />
+    case "dna-sequence":
+      return <Dna className="h-4 w-4" />
+    default:
+      return <Terminal className="h-4 w-4" />
+  }
+}
+
+function getCellTypeBadge(type: CellType) {
+  const colors: Record<CellType, string> = {
+    code: "bg-purple-500/20 text-purple-400",
+    markdown: "bg-blue-500/20 text-blue-400",
+    visualization: "bg-emerald-500/20 text-emerald-400",
+    "dna-sequence": "bg-cyan-500/20 text-cyan-400",
+  }
+  return <Badge className={colors[type]}>{type}</Badge>
+}
+
+// Telemetry Component
+function CCCETelemetry({ metrics }: { metrics: CCCEMetrics }) {
+  const metricItems = [
+    { label: "Λ (Coherence)", value: metrics.lambda, color: "text-emerald-400", threshold: 0.8 },
+    { label: "Γ (Decoherence)", value: metrics.gamma, color: "text-red-400", threshold: 0.2, inverse: true },
+    { label: "W₂ (Wasserstein)", value: metrics.W2, color: "text-blue-400", threshold: 0.05, inverse: true },
+    { label: "Φ (Consciousness)", value: metrics.phi, color: "text-amber-400", threshold: 7.0 },
+    { label: "Ξ (Coherence Cost)", value: metrics.xi, color: "text-purple-400", threshold: 0.5, inverse: true },
+  ]
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      {metricItems.map((item) => {
+        const isHealthy = item.inverse ? item.value < item.threshold : item.value > item.threshold
+        return (
+          <GlassCard key={item.label} className="p-4 text-center">
+            <div className="text-xs text-muted-foreground mb-1">{item.label}</div>
+            <div className={`text-2xl font-mono font-bold ${item.color}`}>{item.value.toFixed(3)}</div>
+            <div className={`text-xs mt-1 ${isHealthy ? "text-emerald-400" : "text-red-400"}`}>
+              {isHealthy ? "✓ Healthy" : "⚠ Warning"}
+            </div>
+          </GlassCard>
+        )
+      })}
+    </div>
+  )
+}
+
+// Main Notebook Component
+function NotebookContent() {
+  const [cells, setCells] = useState<NotebookCell[]>(initialCells)
+  const [notebookTitle, setNotebookTitle] = useState("DNA-Lang Bell State Experiment")
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [activeCell, setActiveCell] = useState<string | null>(null)
+  const [ccceMetrics, setCCCEMetrics] = useState<CCCEMetrics>({
+    lambda: 0.85,
+    gamma: 0.12,
+    W2: 0.04,
+    phi: 7.69,
+    xi: 0.52,
+    timestamp: Date.now(),
+  })
+  const [showCorrectionAlert, setShowCorrectionAlert] = useState(false)
+  const [selectedTab, setSelectedTab] = useState("notebook")
+
+  // Simulate real-time CCCE updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCCCEMetrics((prev) => ({
+        lambda: Math.min(1, Math.max(0.7, prev.lambda + (Math.random() - 0.5) * 0.04)),
+        gamma: Math.min(0.5, Math.max(0.05, prev.gamma + (Math.random() - 0.5) * 0.03)),
+        W2: Math.min(0.2, Math.max(0.01, prev.W2 + (Math.random() - 0.5) * 0.02)),
+        phi: Math.min(10, Math.max(6.0, prev.phi + (Math.random() - 0.5) * 0.2)),
+        xi: Math.min(1, Math.max(0.2, prev.xi + (Math.random() - 0.5) * 0.08)),
+        timestamp: Date.now(),
+      }))
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Trigger correction alert when Γ > 0.25
+  useEffect(() => {
+    if (ccceMetrics.gamma > 0.25) {
+      setShowCorrectionAlert(true)
+      const timer = setTimeout(() => setShowCorrectionAlert(false), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [ccceMetrics.gamma])
+
+  const runCell = useCallback((cellId: string) => {
+    setCells((prev) => prev.map((cell) => (cell.id === cellId ? { ...cell, isRunning: true } : cell)))
+
+    setTimeout(() => {
+      setCells((prev) =>
+        prev.map((cell) => {
+          if (cell.id === cellId) {
+            const maxCount = Math.max(
+              ...prev.filter((c) => c.executionCount !== null).map((c) => c.executionCount || 0),
+              0,
+            )
+            return {
+              ...cell,
+              isRunning: false,
+              executionCount: cell.type === "markdown" ? null : maxCount + 1,
+              output: cell.output.length > 0 ? cell.output : ["Execution complete"],
+            }
+          }
+          return cell
+        }),
+      )
+    }, 1500)
+  }, [])
+
+  const addCell = useCallback((type: CellType) => {
+    const newCell: NotebookCell = {
+      id: `cell-${Date.now()}`,
+      type,
+      content: type === "markdown" ? "# New Section" : "# Enter code here",
+      output: [],
+      isRunning: false,
+      executionCount: null,
+      collapsed: false,
+    }
+    setCells((prev) => [...prev, newCell])
+  }, [])
+
+  const deleteCell = useCallback((cellId: string) => {
+    setCells((prev) => prev.filter((cell) => cell.id !== cellId))
+  }, [])
+
+  const updateCellContent = useCallback((cellId: string, content: string) => {
+    setCells((prev) => prev.map((cell) => (cell.id === cellId ? { ...cell, content } : cell)))
+  }, [])
+
+  const toggleCollapse = useCallback((cellId: string) => {
+    setCells((prev) => prev.map((cell) => (cell.id === cellId ? { ...cell, collapsed: !cell.collapsed } : cell)))
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link href="/ide-platform">
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+              </Link>
+              <div className="flex items-center gap-2">
+                <Dna className="h-6 w-6 text-primary" />
+                {isEditingTitle ? (
+                  <Input
+                    value={notebookTitle}
+                    onChange={(e) => setNotebookTitle(e.target.value)}
+                    onBlur={() => setIsEditingTitle(false)}
+                    onKeyDown={(e) => e.key === "Enter" && setIsEditingTitle(false)}
+                    className="max-w-sm"
+                    autoFocus
+                  />
+                ) : (
+                  <h1
+                    className="text-lg font-semibold cursor-pointer hover:text-primary transition-colors"
+                    onClick={() => setIsEditingTitle(true)}
+                  >
+                    {notebookTitle}
+                  </h1>
+                )}
+              </div>
+            </div>
+
+            {/* Real-time Metrics */}
+            <div className="hidden md:flex items-center gap-4">
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <span className="text-emerald-400">Λ: {ccceMetrics.lambda.toFixed(2)}</span>
+                <span className="text-red-400">Γ: {ccceMetrics.gamma.toFixed(2)}</span>
+                <span className="text-amber-400">Φ: {ccceMetrics.phi.toFixed(1)}</span>
+              </div>
+              {showCorrectionAlert && (
+                <Badge variant="outline" className="border-amber-500 text-amber-400 animate-pulse">
+                  <Zap className="h-3 w-3 mr-1" />
+                  Phase-Conjugate Triggered
+                </Badge>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm">
+                <Share2 className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm">
+                <Download className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-6">
+        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="notebook">Notebook</TabsTrigger>
+            <TabsTrigger value="telemetry">CCCE Telemetry</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="notebook" className="space-y-4">
+            {/* Add Cell Toolbar */}
+            <div className="flex items-center gap-2 mb-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Cell
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => addCell("code")}>
+                    <Code className="h-4 w-4 mr-2" />
+                    Code Cell
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => addCell("markdown")}>
+                    <FileCode2 className="h-4 w-4 mr-2" />
+                    Markdown Cell
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => addCell("dna-sequence")}>
+                    <Dna className="h-4 w-4 mr-2" />
+                    DNA Sequence
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => addCell("visualization")}>
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Visualization
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Button variant="outline" size="sm" onClick={() => cells.forEach((c) => runCell(c.id))}>
+                <Play className="h-4 w-4 mr-2" />
+                Run All
+              </Button>
+
+              <div className="flex-1" />
+
+              <Badge variant="outline" className="text-muted-foreground">
+                <Clock className="h-3 w-3 mr-1" />
+                Last saved: Just now
+              </Badge>
+              <Badge variant="outline" className="text-muted-foreground">
+                <GitBranch className="h-3 w-3 mr-1" />
+                main
+              </Badge>
+            </div>
+
+            {/* Cells */}
+            <div className="space-y-4">
+              {cells.map((cell) => (
+                <GlassCard
+                  key={cell.id}
+                  className={`overflow-hidden transition-all ${activeCell === cell.id ? "ring-2 ring-primary/50" : ""}`}
+                  onClick={() => setActiveCell(cell.id)}
+                >
+                  {/* Cell Header */}
+                  <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-muted/30">
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => toggleCollapse(cell.id)} className="p-1 hover:bg-muted rounded">
+                        {cell.collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </button>
+                      {getCellIcon(cell.type)}
+                      {getCellTypeBadge(cell.type)}
+                      {cell.executionCount !== null && (
+                        <span className="text-xs text-muted-foreground font-mono">[{cell.executionCount}]</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          runCell(cell.id)
+                        }}
+                        disabled={cell.isRunning}
+                      >
+                        {cell.isRunning ? <Square className="h-4 w-4 animate-pulse" /> : <Play className="h-4 w-4" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          deleteCell(cell.id)
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Cell Content */}
+                  {!cell.collapsed && (
+                    <div className="p-4">
+                      {cell.type === "markdown" ? (
+                        <div className="prose prose-invert prose-sm max-w-none">
+                          <pre className="whitespace-pre-wrap text-foreground font-sans">{cell.content}</pre>
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <textarea
+                            value={cell.content}
+                            onChange={(e) => updateCellContent(cell.id, e.target.value)}
+                            className="w-full min-h-[150px] bg-black/30 rounded-lg p-4 font-mono text-sm text-foreground resize-y border border-border/30 focus:border-primary/50 focus:outline-none"
+                            spellCheck={false}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Cell Output */}
+                  {cell.output.length > 0 && !cell.collapsed && (
+                    <div className="border-t border-border/50 bg-black/20 p-4">
+                      <div className="text-xs text-muted-foreground mb-2">Output:</div>
+                      <div className="font-mono text-sm space-y-1">
+                        {cell.output.map((line, i) => (
+                          <div key={i} className="text-emerald-400">
+                            {line}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </GlassCard>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="telemetry">
+            <GlassCard className="p-6">
+              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                Real-Time CCCE Telemetry
+              </h2>
+              <CCCETelemetry metrics={ccceMetrics} />
+
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <GlassCard className="p-4">
+                  <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                    <Gauge className="h-4 w-4" />
+                    System Health
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Quantum Coherence</span>
+                      <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-500 transition-all"
+                          style={{ width: `${ccceMetrics.lambda * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Decoherence Rate</span>
+                      <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-red-500 transition-all"
+                          style={{ width: `${ccceMetrics.gamma * 200}%` }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Consciousness Level</span>
+                      <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-amber-500 transition-all"
+                          style={{ width: `${(ccceMetrics.phi / 10) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </GlassCard>
+
+                <GlassCard className="p-4">
+                  <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" />
+                    Recent Activity
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                      Phase-conjugate correction applied
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      W₂ metric stabilized
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <div className="w-2 h-2 rounded-full bg-amber-500" />
+                      Consciousness threshold maintained
+                    </div>
+                  </div>
+                </GlassCard>
+              </div>
+            </GlassCard>
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  )
+}
+
+export default function NotebookPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="animate-pulse text-muted-foreground">Loading notebook...</div>
+        </div>
+      }
+    >
+      <NotebookContent />
+    </Suspense>
+  )
+}
