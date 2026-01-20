@@ -125,13 +125,14 @@ function highlightSyntax(code: string, language: string): string {
     })
 
     // 3. Strings (Thematic: 'genome-strand')
-    result = result.replace(/(\["'])(?:(?=(\\?))\2.)*?\1/g, '<span class="text-[#facc15]">' + '$&' + '</span>') // Yellow
+    result = result.replace(/"([^"\\]|\\.)*"/g, '<span class="text-[#facc15]">$&</span>') // Yellow double quotes
+    result = result.replace(/'([^'\\]|\\.)*'/g, '<span class="text-[#facc15]">$&</span>') // Yellow single quotes
 
     // 4. Comments (Thematic: 'telemetry')
-    result = result.replace(/(\#.*)$/gm, '<span class="text-[#555] italic">' + '$1' + '</span>') // Dark Grey/Muted
+    result = result.replace(/(#.*)$/gm, '<span class="text-[#555] italic">$1</span>') // Dark Grey/Muted
 
     // 5. Numbers (Thematic: 'constant-value')
-    result = result.replace(/\\b(\\d+\\.?\\d*)\\b/g, '<span class="text-[#f87171]">' + '$1' + '</span>') // Red
+    result = result.replace(/\b(\d+\.?\d*)\b/g, '<span class="text-[#f87171]">$1</span>') // Red
 
     return result
 }
@@ -273,7 +274,7 @@ const QuantumNotebookStudio = () => {
             <header className="flex justify-between items-center pb-6 border-b border-gray-800">
                 <h1 className="text-3xl font-extrabold flex items-center">
                     <Dna className="w-8 h-8 mr-3 text-purple-400" />
-                    DNA::}{::LANG Quantum Notebook
+                    DNA::LANG Quantum Notebook
                 </h1>
                 <div className="flex space-x-2">
                     <Button variant="outline" className="bg-gray-800 text-gray-300 hover:bg-gray-700"><Share2 className="w-4 h-4 mr-2" />Share Coherence</Button>
@@ -288,4 +289,4 @@ const QuantumNotebookStudio = () => {
     )
 }
 
-// export default QuantumNotebookStudio;
+export default QuantumNotebookStudio;
