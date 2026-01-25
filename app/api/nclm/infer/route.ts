@@ -255,8 +255,3 @@ export async function GET() {
     },
   })
 }
-
-// Helper function to approximate complex number multiplication
-function j_approx(angle: number): number {
-  return Math.sin(angle)
-}
