@@ -24,6 +24,7 @@ import {
   Play,
   Pause,
 } from "lucide-react"
+import ScimitarMousePanel from "@/components/scimitar-mouse-panel" // Declaring the ScimitarMousePanel variable
 
 // Device topology from our spec
 const DEVICE_TOPOLOGY = [
@@ -216,6 +217,7 @@ export default function DeviceMeshPage() {
             <TabsTrigger value="topology">Device Topology</TabsTrigger>
             <TabsTrigger value="bifurcation">Bifurcation Zone</TabsTrigger>
             <TabsTrigger value="agents">Agent Swarm</TabsTrigger>
+            <TabsTrigger value="scimitar">Scimitar Mouse</TabsTrigger>
             <TabsTrigger value="sovereign-os">SovereignOS</TabsTrigger>
           </TabsList>
 
@@ -463,6 +465,11 @@ export default function DeviceMeshPage() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Scimitar Mouse Tab */}
+          <TabsContent value="scimitar">
+            <ScimitarMousePanel />
           </TabsContent>
 
           {/* SovereignOS Tab */}

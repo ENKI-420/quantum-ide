@@ -170,6 +170,27 @@ const navGroups = [
         description: "Adaptive Autopoietic Framework",
         shortcut: "A F",
       },
+      {
+        href: "/device-mesh",
+        label: "Device Mesh",
+        icon: Network,
+        description: "NL2-LAS Bifurcation Zone",
+        shortcut: "A M",
+      },
+      {
+        href: "/telemetry",
+        label: "Telemetry",
+        icon: Radio,
+        description: "CCCE Live Metrics",
+        shortcut: "A T",
+      },
+      {
+        href: "/performance",
+        label: "Performance",
+        icon: Cpu,
+        description: "System Performance",
+        shortcut: "A P",
+      },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
         href: "/orchestrator",
