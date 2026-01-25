@@ -191,6 +191,13 @@ const navGroups = [
         description: "System Performance",
         shortcut: "A P",
       },
+      {
+        href: "/sovereign-cockpit",
+        label: "Sovereign Cockpit",
+        icon: Shield,
+        description: "Phase-Conjugate Genesis",
+        shortcut: "A S",
+      },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
         href: "/orchestrator",
