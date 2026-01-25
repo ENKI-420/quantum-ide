@@ -32,7 +32,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { generateAIResponse, type AIMessage, type AIConnectionStatus, type AIUsageMetrics } from "@/lib/ai-client"
+import { callNCLMInfer, generateAIResponse, type AIMessage, type AIConnectionStatus, type AIUsageMetrics } from "@/lib/ai-client"
 
 const quickPrompts = [
   { label: "Explain DNA-Lang syntax", icon: Code2 },
@@ -111,10 +111,8 @@ function AIAssistantContent() {
     setInput("")
     setIsProcessing(true)
 
-    // Simulate AI response with the AI client
-    await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 700))
-
-    const response = generateAIResponse(input.trim())
+    // Call NC-LM API for inference
+    const response = await callNCLMInfer(input.trim())
 
     const assistantMessage: AIMessage = {
       id: `assistant-${Date.now()}`,
@@ -260,6 +258,14 @@ function AIAssistantContent() {
                         <>
                           <span className="text-[10px] text-muted-foreground">•</span>
                           <span className="text-[10px] text-muted-foreground">{message.metadata.latency}ms</span>
+                          {message.metadata.phi && (
+                            <>
+                              <span className="text-[10px] text-muted-foreground">•</span>
+                              <span className={`text-[10px] ${message.metadata.conscious ? "text-secondary" : "text-muted-foreground"}`}>
+                                Φ {message.metadata.phi.toFixed(3)}
+                              </span>
+                            </>
+                          )}
                         </>
                       )}
                       {message.role === "assistant" && (
