@@ -205,6 +205,13 @@ const navGroups = [
         description: "Manifold Sealed Report",
         shortcut: "A E",
       },
+      {
+        href: "/quantum-command",
+        label: "Quantum Command",
+        icon: Globe,
+        description: "Post-Quantum Interface",
+        shortcut: "A Q",
+      },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
         href: "/orchestrator",
