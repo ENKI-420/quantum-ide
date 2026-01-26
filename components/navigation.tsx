@@ -198,6 +198,13 @@ const navGroups = [
         description: "Phase-Conjugate Genesis",
         shortcut: "A S",
       },
+      {
+        href: "/asae-terminal",
+        label: "ASAE Terminal",
+        icon: Lock,
+        description: "Manifold Sealed Report",
+        shortcut: "A E",
+      },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
         href: "/orchestrator",
