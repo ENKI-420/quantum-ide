@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+
 import { HeroSection } from "@/components/landing/hero-section"
 import { QuantumFeatures } from "@/components/landing/quantum-features"
 import { APISection } from "@/components/landing/api-section"
