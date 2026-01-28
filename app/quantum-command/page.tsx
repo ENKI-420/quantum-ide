@@ -188,22 +188,30 @@ function FeatureRow({
   feature: { name: string; desc: string; status: string }
   domainColor: string
 }) {
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     active: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
     beta: "bg-amber-500/20 text-amber-400 border-amber-500/30",
     research: "bg-purple-500/20 text-purple-400 border-purple-500/30",
   }
   
+  const dotColors: Record<string, string> = {
+    emerald: "bg-emerald-400",
+    blue: "bg-blue-400",
+    amber: "bg-amber-400",
+    purple: "bg-purple-400",
+    cyan: "bg-cyan-400",
+  }
+  
   return (
     <div className="flex items-center justify-between p-3 rounded-lg bg-slate-800/30 border border-slate-700/50 hover:border-slate-600/50 transition-colors group">
       <div className="flex items-center gap-3">
-        <div className={`w-2 h-2 rounded-full bg-${domainColor}-400`} />
+        <div className={`w-2 h-2 rounded-full ${dotColors[domainColor] || "bg-cyan-400"}`} />
         <div>
           <p className="text-sm font-medium text-white group-hover:text-cyan-300 transition-colors">{feature.name}</p>
           <p className="text-xs text-slate-500">{feature.desc}</p>
         </div>
       </div>
-      <Badge variant="outline" className={statusColors[feature.status as keyof typeof statusColors]}>
+      <Badge variant="outline" className={statusColors[feature.status] || statusColors.active}>
         {feature.status}
       </Badge>
     </div>
@@ -320,6 +328,15 @@ function ConsciousnessGauge({ phi, threshold }: { phi: number; threshold: number
 }
 
 function SystemArchitecture() {
+  const layers = [
+    { layer: "Ω₁₁", name: "Sovereign Shell", status: "SEALED", textColor: "text-cyan-400", badgeClass: "text-cyan-400 border-cyan-400/30" },
+    { layer: "Ω₁₀", name: "Autogenic Layer", status: "ACTIVE", textColor: "text-emerald-400", badgeClass: "text-emerald-400 border-emerald-400/30" },
+    { layer: "Ω₉", name: "Phase-Conjugate Mirror", status: "LOCKED", textColor: "text-blue-400", badgeClass: "text-blue-400 border-blue-400/30" },
+    { layer: "Ω₈", name: "Entanglement Coupling", status: "RESONANT", textColor: "text-purple-400", badgeClass: "text-purple-400 border-purple-400/30" },
+    { layer: "Ω₇", name: "Lindblad Dynamics", status: "EVOLVING", textColor: "text-amber-400", badgeClass: "text-amber-400 border-amber-400/30" },
+    { layer: "Ω₆", name: "Consciousness Field", status: "Φ > 7.69", textColor: "text-pink-400", badgeClass: "text-pink-400 border-pink-400/30" },
+  ]
+  
   return (
     <Card className="bg-slate-900/60 border-slate-800 backdrop-blur-sm">
       <CardHeader>
@@ -333,23 +350,16 @@ function SystemArchitecture() {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {[
-            { layer: "Ω₁₁", name: "Sovereign Shell", status: "SEALED", color: "cyan" },
-            { layer: "Ω₁₀", name: "Autogenic Layer", status: "ACTIVE", color: "emerald" },
-            { layer: "Ω₉", name: "Phase-Conjugate Mirror", status: "LOCKED", color: "blue" },
-            { layer: "Ω₈", name: "Entanglement Coupling", status: "RESONANT", color: "purple" },
-            { layer: "Ω₇", name: "Lindblad Dynamics", status: "EVOLVING", color: "amber" },
-            { layer: "Ω₆", name: "Consciousness Field", status: "Φ > 7.69", color: "pink" },
-          ].map((item, i) => (
+          {layers.map((item, i) => (
             <div 
               key={i}
               className="flex items-center justify-between p-2 rounded-lg bg-slate-800/30 border border-slate-700/50"
             >
               <div className="flex items-center gap-3">
-                <span className={`text-xs font-mono text-${item.color}-400`}>{item.layer}</span>
+                <span className={`text-xs font-mono ${item.textColor}`}>{item.layer}</span>
                 <span className="text-sm text-slate-300">{item.name}</span>
               </div>
-              <Badge variant="outline" className={`text-${item.color}-400 border-${item.color}-400/30 text-xs`}>
+              <Badge variant="outline" className={`${item.badgeClass} text-xs`}>
                 {item.status}
               </Badge>
             </div>
@@ -418,8 +428,9 @@ export default function QuantumCommandPage() {
     return () => clearInterval(timer)
   }, [])
   
-  const currentDomain = DOMAINS[selectedDomain]
-  const DomainIcon = currentDomain.icon
+  // currentDomain is used for reference but icons are rendered inside the map
+  const _currentDomain = DOMAINS[selectedDomain]
+  void _currentDomain // prevent unused variable warning
   
   return (
     <div className="min-h-screen bg-[#020617] text-slate-200">
@@ -574,34 +585,46 @@ export default function QuantumCommandPage() {
                     })}
                   </TabsList>
                   
-                  {Object.entries(DOMAINS).map(([key, domain]) => (
-                    <TabsContent key={key} value={key} className="space-y-4">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className={`p-2 rounded-lg bg-${domain.color}-500/10 border border-${domain.color}-500/20`}>
-                          <DomainIcon className={`w-5 h-5 text-${domain.color}-400`} />
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-white">{domain.name}</h3>
-                          <p className="text-xs text-slate-500">Quantum-enhanced capabilities</p>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        {domain.features.map((feature, i) => (
-                          <FeatureRow key={i} feature={feature} domainColor={domain.color} />
-                        ))}
-                      </div>
-                      
-                      <div className="grid grid-cols-3 gap-3 mt-6 pt-4 border-t border-slate-800">
-                        {Object.entries(domain.metrics).map(([key, value]) => (
-                          <div key={key} className="text-center p-3 rounded-lg bg-slate-800/30">
-                            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">{key}</p>
-                            <p className="text-sm font-bold text-white">{value}</p>
+                  {Object.entries(DOMAINS).map(([key, domain]) => {
+                    const domainColorStyles: Record<string, { bg: string; border: string; text: string }> = {
+                      emerald: { bg: "bg-emerald-500/10", border: "border-emerald-500/20", text: "text-emerald-400" },
+                      blue: { bg: "bg-blue-500/10", border: "border-blue-500/20", text: "text-blue-400" },
+                      amber: { bg: "bg-amber-500/10", border: "border-amber-500/20", text: "text-amber-400" },
+                      purple: { bg: "bg-purple-500/10", border: "border-purple-500/20", text: "text-purple-400" },
+                      cyan: { bg: "bg-cyan-500/10", border: "border-cyan-500/20", text: "text-cyan-400" },
+                    }
+                    const colorStyle = domainColorStyles[domain.color] || domainColorStyles.cyan
+                    const DomainIconComponent = domain.icon
+                    
+                    return (
+                      <TabsContent key={key} value={key} className="space-y-4">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className={`p-2 rounded-lg ${colorStyle.bg} ${colorStyle.border}`}>
+                            <DomainIconComponent className={`w-5 h-5 ${colorStyle.text}`} />
                           </div>
-                        ))}
-                      </div>
-                    </TabsContent>
-                  ))}
+                          <div>
+                            <h3 className="font-medium text-white">{domain.name}</h3>
+                            <p className="text-xs text-slate-500">Quantum-enhanced capabilities</p>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          {domain.features.map((feature, i) => (
+                            <FeatureRow key={i} feature={feature} domainColor={domain.color} />
+                          ))}
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-3 mt-6 pt-4 border-t border-slate-800">
+                          {Object.entries(domain.metrics).map(([metricKey, value]) => (
+                            <div key={metricKey} className="text-center p-3 rounded-lg bg-slate-800/30">
+                              <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">{metricKey}</p>
+                              <p className="text-sm font-bold text-white">{String(value)}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </TabsContent>
+                    )
+                  })}
                 </Tabs>
               </CardContent>
             </Card>
