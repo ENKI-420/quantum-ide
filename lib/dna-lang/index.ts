@@ -8,6 +8,11 @@ export * from "./living-component"
 export * from "./evolutionary-router"
 export * from "./protein-synthesis"
 
+// Re-export 11D-CRSM modules
+export * from "../11dcrsm"
+export * from "../11dcrsm/hooks"
+export * from "../11dcrsm/kyber-security"
+
 // Lambda-Phi Universal Memory Constant
 export const LAMBDA_PHI = 2.176e-8 // s⁻¹
 
