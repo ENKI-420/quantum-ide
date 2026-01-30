@@ -212,6 +212,13 @@ const navGroups = [
         description: "Post-Quantum Interface",
         shortcut: "A Q",
       },
+      {
+        href: "/post-quantum",
+        label: "PQ Command Center",
+        icon: Shield,
+        description: "Post-Quantum Dashboard",
+        shortcut: "A U",
+      },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
         href: "/orchestrator",
