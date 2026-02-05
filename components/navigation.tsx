@@ -50,6 +50,7 @@ import {
   FileText,
   Shield,
   Lock,
+  Microscope,
 } from "lucide-react"
 
 const navGroups = [
@@ -239,7 +240,14 @@ const navGroups = [
         label: "Clinical Trials",
         icon: FlaskConical,
         description: "AMG193 Trial Management",
-        shortcut: "A T",
+        shortcut: "A L",
+      },
+      {
+        href: "/cancer-research",
+        label: "Cancer Research",
+        icon: Microscope,
+        description: "Oncology Command Center",
+        shortcut: "A N",
       },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {

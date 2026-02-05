@@ -58,7 +58,7 @@ const platformFeatures = [
     icon: Brain,
     title: "NC-LM Engine",
     description: "Non-Causal Language Model with pilot-wave correlation, consciousness tracking, and physics-grounded inference.",
-    href: "/ai-assistant",
+    href: "/noncausal-lm",
     category: "AI Tools",
     badge: "New",
   },
