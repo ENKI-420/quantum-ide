@@ -233,6 +233,13 @@ const navGroups = [
         description: "Strategic Assets Dashboard",
         shortcut: "A R",
       },
+      {
+        href: "/clinical-trials",
+        label: "Clinical Trials",
+        icon: FlaskConical,
+        description: "AMG193 Trial Management",
+        shortcut: "A T",
+      },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
         href: "/orchestrator",
