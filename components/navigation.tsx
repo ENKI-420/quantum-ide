@@ -219,6 +219,13 @@ const navGroups = [
         description: "Post-Quantum Dashboard",
         shortcut: "A U",
       },
+      {
+        href: "/command-center",
+        label: "Command Center",
+        icon: Radio,
+        description: "Unified DNA-Lang Dashboard",
+        shortcut: "A C",
+      },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
         href: "/orchestrator",
