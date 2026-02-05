@@ -49,6 +49,7 @@ import {
   Sparkles,
   FileText,
   Shield,
+  Lock,
 } from "lucide-react"
 
 const navGroups = [
