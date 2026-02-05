@@ -226,6 +226,13 @@ const navGroups = [
         description: "Unified DNA-Lang Dashboard",
         shortcut: "A C",
       },
+      {
+        href: "/organism-dashboard",
+        label: "Organism Registry",
+        icon: Boxes,
+        description: "Strategic Assets Dashboard",
+        shortcut: "A R",
+      },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
         href: "/orchestrator",
