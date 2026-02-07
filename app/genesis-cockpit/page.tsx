@@ -784,9 +784,12 @@ export default function GenesisCockpitPage() {
         {/* Navigation Links */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
+            { label: "Sovereign Security", href: "/sovereign-security", desc: "Platform Integrity Command" },
+            { label: "Repository Evolution", href: "/repo-evolution", desc: "AETERNA_PORTA Migration" },
             { label: "Telemetry Capsule", href: "/telemetry-capsule", desc: "QP-IDE Capsule Registry" },
             { label: "Clinical Trials", href: "/clinical-trials", desc: "AMG193 Trial Management" },
             { label: "Cancer Research", href: "/cancer-research", desc: "Oncology Command Center" },
+            { label: "Sovereign Cockpit", href: "/sovereign-cockpit", desc: "Legacy Sovereign Interface" },
           ].map((link) => (
             <Link key={link.href} href={link.href}>
               <Card className="border-border hover:border-primary/50 transition-colors cursor-pointer">

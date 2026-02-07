@@ -27,6 +27,8 @@ import {
   GitBranch,
   Brain,
   BarChart3,
+  Lock,
+  Dna,
 } from "lucide-react"
 
 const platformFeatures = [
@@ -125,6 +127,22 @@ const platformFeatures = [
     href: "/analytics",
     category: "Observability",
     badge: null,
+  },
+  {
+    icon: Lock,
+    title: "Sovereign Security",
+    description: "Defense-tech command center for fleet monitoring, Q-SLICE folding, and platform integrity.",
+    href: "/sovereign-security",
+    category: "Observability",
+    badge: "New",
+  },
+  {
+    icon: Dna,
+    title: "Repository Evolution",
+    description: "Track ENKI-420 to QUANTUM-ADVANTAGE migration with lineage graphs and Millennium Archive.",
+    href: "/repo-evolution",
+    category: "Management",
+    badge: "New",
   },
 ]
 

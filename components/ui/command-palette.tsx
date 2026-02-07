@@ -120,6 +120,22 @@ const commands: CommandItem[] = [
     category: "Platform",
   },
   {
+    id: "sovereign-security",
+    label: "Sovereign Security",
+    description: "Platform integrity command center",
+    icon: Shield,
+    href: "/sovereign-security",
+    category: "Platform",
+  },
+  {
+    id: "repo-evolution",
+    label: "Repository Evolution",
+    description: "AETERNA_PORTA migration dashboard",
+    icon: Workflow,
+    href: "/repo-evolution",
+    category: "Tools",
+  },
+  {
     id: "data",
     label: "Data Platform",
     description: "Real-time telemetry",
