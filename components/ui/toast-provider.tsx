@@ -50,10 +50,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     const id = Math.random().toString(36).slice(2)
     setToasts((prev) => [...prev, { ...toast, id }])
 
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id))
-    }, 5000)
+    // Auto-remove after 5 seconds - use requestAnimationFrame to ensure mount is complete
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id))
+      }, 5000)
+    })
   }, [])
 
   const removeToast = React.useCallback((id: string) => {

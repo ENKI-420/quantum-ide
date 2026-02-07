@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -116,27 +116,27 @@ export function MobileNav() {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const [lastScrollY, setLastScrollY] = useState(0)
   const [navVisible, setNavVisible] = useState(true)
+  const lastScrollYRef = useRef(0)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  const handleScroll = useCallback(() => {
-    const currentScrollY = window.scrollY
-    if (currentScrollY > lastScrollY && currentScrollY > 100) {
-      setNavVisible(false)
-    } else {
-      setNavVisible(true)
-    }
-    setLastScrollY(currentScrollY)
-  }, [lastScrollY])
-
   useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      if (currentScrollY > lastScrollYRef.current && currentScrollY > 100) {
+        setNavVisible(false)
+      } else {
+        setNavVisible(true)
+      }
+      lastScrollYRef.current = currentScrollY
+    }
+
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [handleScroll])
+  }, [])
 
   useEffect(() => {
     setMenuOpen(false)
