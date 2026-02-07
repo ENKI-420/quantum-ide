@@ -51,6 +51,7 @@ import {
   Shield,
   Lock,
   Microscope,
+  Fingerprint,
 } from "lucide-react"
 
 const navGroups = [
@@ -248,6 +249,13 @@ const navGroups = [
         icon: Microscope,
         description: "Oncology Command Center",
         shortcut: "A N",
+      },
+      {
+        href: "/telemetry-capsule",
+        label: "Telemetry Capsule",
+        icon: Fingerprint,
+        description: "QP-IDE Capsule Registry",
+        shortcut: "A P",
       },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
