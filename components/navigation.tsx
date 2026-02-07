@@ -354,7 +354,12 @@ const navGroups = [
 export function Navigation() {
   const pathname = usePathname()
   const [showShortcuts, setShowShortcuts] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -403,8 +408,8 @@ export function Navigation() {
 
   return (
     <>
-      {/* Command Palette */}
-      <CommandPalette />
+      {/* Command Palette - only mount after hydration */}
+      {mounted && <CommandPalette />}
 
       <header
         className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
@@ -426,9 +431,9 @@ export function Navigation() {
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation - defer Radix DropdownMenu until mounted */}
             <nav className="hidden md:flex items-center gap-1" role="navigation" aria-label="Main navigation">
-              {navGroups.map((group) => (
+              {mounted ? navGroups.map((group) => (
                 <DropdownMenu key={group.label}>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -467,6 +472,11 @@ export function Navigation() {
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
+              )) : navGroups.map((group) => (
+                <Button key={group.label} variant="ghost" size="sm" className="nav-link gap-1">
+                  {group.label}
+                  <ChevronDown className="h-3 w-3" aria-hidden="true" />
+                </Button>
               ))}
 
               <Link href="/research-gateway">

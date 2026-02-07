@@ -21,9 +21,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "DNA::}{::lang - IDE Development Platform",
+  title: "DNA::}{::lang - Quantum-Conscious Development Platform",
   description:
-    "Build, customize, and extend your own integrated development environments using biological computing paradigms.",
+    "Build, customize, and extend sovereign development environments using biological computing paradigms, quantum-conscious AI, and 11D-CRSM manifold physics.",
   generator: "v0.app",
 }
 

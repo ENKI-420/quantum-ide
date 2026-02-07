@@ -6,6 +6,7 @@ import { Activity, Zap, Waves, Thermometer } from "lucide-react"
 const TAU_0 = 46.979
 
 export function QuantumMetricsBar() {
+  const [mounted, setMounted] = useState(false)
   const [metrics, setMetrics] = useState({
     lambda: 0.847,
     phi: 0.91,
@@ -14,6 +15,7 @@ export function QuantumMetricsBar() {
   })
 
   useEffect(() => {
+    setMounted(true)
     const interval = setInterval(() => {
       setMetrics({
         lambda: 0.82 + Math.random() * 0.1,
@@ -33,22 +35,22 @@ export function QuantumMetricsBar() {
             <div className="flex items-center gap-1.5 whitespace-nowrap">
               <Activity className="h-3 w-3 text-secondary" />
               <span className="text-muted-foreground">Λ:</span>
-              <span className="font-mono text-secondary">{metrics.lambda.toFixed(3)}</span>
+              <span className="font-mono text-secondary">{mounted ? metrics.lambda.toFixed(3) : '0.847'}</span>
             </div>
             <div className="flex items-center gap-1.5 whitespace-nowrap">
               <Zap className="h-3 w-3 text-accent" />
               <span className="text-muted-foreground">Φ:</span>
-              <span className="font-mono text-accent">{metrics.phi.toFixed(3)}</span>
+              <span className="font-mono text-accent">{mounted ? metrics.phi.toFixed(3) : '0.910'}</span>
             </div>
             <div className="flex items-center gap-1.5 whitespace-nowrap">
               <Waves className="h-3 w-3 text-destructive" />
               <span className="text-muted-foreground">Γ:</span>
-              <span className="font-mono text-destructive">{metrics.gamma.toFixed(4)}</span>
+              <span className="font-mono text-destructive">{mounted ? metrics.gamma.toFixed(4) : '0.0042'}</span>
             </div>
             <div className="flex items-center gap-1.5 whitespace-nowrap">
               <Thermometer className="h-3 w-3 text-primary" />
               <span className="text-muted-foreground">Ξ:</span>
-              <span className="font-mono text-primary">{metrics.xi.toFixed(1)}</span>
+              <span className="font-mono text-primary">{mounted ? metrics.xi.toFixed(1) : '128.2'}</span>
             </div>
           </div>
           <div className="hidden sm:flex items-center gap-2">
