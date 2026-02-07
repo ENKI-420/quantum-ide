@@ -556,8 +556,8 @@ export default function RepoEvolutionPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             { label: "Genesis 3.0 Cockpit", href: "/genesis-cockpit", desc: "Multi-Agent Sovereign Command" },
+            { label: "WardenClyffe-Q", href: "/wardenclyffe", desc: "Information-Gated Energy Engine" },
             { label: "Sovereign Security", href: "/sovereign-security", desc: "Platform Integrity Monitor" },
-            { label: "Telemetry Capsule", href: "/telemetry-capsule", desc: "QP-IDE Capsule Registry" },
           ].map((link) => (
             <Link key={link.href} href={link.href}>
               <Card className="border-border hover:border-primary/50 transition-colors cursor-pointer">

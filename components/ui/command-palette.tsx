@@ -23,6 +23,7 @@ import {
   Workflow,
   Radio,
   Home,
+  Zap,
 } from "lucide-react"
 
 interface CommandItem {
@@ -134,6 +135,14 @@ const commands: CommandItem[] = [
     icon: Workflow,
     href: "/repo-evolution",
     category: "Tools",
+  },
+  {
+    id: "wardenclyffe",
+    label: "WardenClyffe-Q Engine",
+    description: "Information-gated energy extraction",
+    icon: Zap,
+    href: "/wardenclyffe",
+    category: "Platform",
   },
   {
     id: "data",

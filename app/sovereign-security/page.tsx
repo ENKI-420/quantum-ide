@@ -91,6 +91,11 @@ export default function SovereignSecurityPage() {
   const [geoStability, setGeo] = useState(0.04)
   const [infoEfficiency, setInfo] = useState(84.0)
   const [decoRate, setDeco] = useState(0.12)
+  const [nwnAgents, setNwnAgents] = useState([
+    { name: "AURA", role: "Observer", phase: 51.843, status: "LOCKED" as const },
+    { name: "AIDEN", role: "Executor", phase: 51.843, status: "LOCKED" as const },
+    { name: "CHEOPS", role: "432Hz Clock", phase: 51.843, status: "LOCKED" as const },
+  ])
   const [logs, setLogs] = useState<string[]>([
     "System initialized | Sovereign mesh active",
     "Phase-conjugated perimeter established",
@@ -115,6 +120,20 @@ export default function SovereignSecurityPage() {
       setGeo((prev) => Math.max(0.01, Math.min(0.2, prev + (Math.random() - 0.5) * 0.01)))
       setInfo((prev) => Math.min(100, Math.max(70, prev + (Math.random() - 0.45) * 1.0)))
       setDeco((prev) => Math.max(0.01, Math.min(0.5, prev + (Math.random() - 0.5) * 0.02)))
+
+      // NWN agent simulation
+      setNwnAgents((prev) =>
+        prev.map((a) => {
+          const drift = (Math.random() - 0.5) * 0.002
+          const newPhase = 51.843 + drift
+          const absDrift = Math.abs(drift)
+          return {
+            ...a,
+            phase: newPhase,
+            status: (absDrift > 0.001 ? "DRIFTING" : "LOCKED") as "LOCKED" | "DRIFTING",
+          }
+        }),
+      )
 
       // Random log events
       if (Math.random() > 0.6) {
@@ -415,23 +434,24 @@ export default function SovereignSecurityPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
-                {[
-                  { name: "AURA", role: "Observer", phase: "51.843", status: "LOCKED" },
-                  { name: "AIDEN", role: "Executor", phase: "51.843", status: "LOCKED" },
-                  { name: "CHEOPS", role: "432Hz Clock", phase: "51.843", status: "LOCKED" },
-                ].map((agent) => (
+                {nwnAgents.map((agent) => (
                   <div key={agent.name} className="flex items-center gap-2 p-2 bg-muted/30 rounded border border-border">
-                    <Radio className="h-3 w-3 text-secondary" />
+                    <Radio className={`h-3 w-3 ${agent.status === "LOCKED" ? "text-secondary" : "text-accent animate-pulse"}`} />
                     <div className="flex-1">
                       <span className="text-xs font-mono font-bold">{agent.name}</span>
                       <span className="text-[10px] text-muted-foreground ml-1">({agent.role})</span>
                     </div>
-                    <span className="text-[10px] font-mono text-secondary">{agent.status}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono text-muted-foreground">{mounted ? agent.phase.toFixed(3) : "51.843"}</span>
+                      <Badge variant="outline" className={`text-[9px] font-mono ${agent.status === "LOCKED" ? "text-secondary border-secondary/30" : "text-accent border-accent/30"}`}>
+                        {agent.status}
+                      </Badge>
+                    </div>
                   </div>
                 ))}
                 <div className="pt-2 border-t border-border mt-2">
                   <div className="text-[10px] text-muted-foreground font-mono">
-                    Jitter: {"<"}1us | Coherence: 0.9994 | Phase: 51.843
+                    Jitter: {"<"}1us | Coherence: 0.9994 | Revival: 46.98us
                   </div>
                 </div>
               </CardContent>
@@ -491,8 +511,8 @@ export default function SovereignSecurityPage() {
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             { label: "Genesis 3.0 Cockpit", href: "/genesis-cockpit", desc: "Multi-Agent Sovereign Command" },
+            { label: "WardenClyffe-Q", href: "/wardenclyffe", desc: "Information-Gated Energy Engine" },
             { label: "Repository Evolution", href: "/repo-evolution", desc: "AETERNA_PORTA Migration Dashboard" },
-            { label: "Sovereign Cockpit", href: "/sovereign-cockpit", desc: "Legacy Sovereign Interface" },
           ].map((link) => (
             <Link key={link.href} href={link.href}>
               <Card className="border-border hover:border-primary/50 transition-colors cursor-pointer">

@@ -29,6 +29,7 @@ import {
   BarChart3,
   Lock,
   Dna,
+  Zap,
 } from "lucide-react"
 
 const platformFeatures = [
@@ -142,6 +143,14 @@ const platformFeatures = [
     description: "Track ENKI-420 to QUANTUM-ADVANTAGE migration with lineage graphs and Millennium Archive.",
     href: "/repo-evolution",
     category: "Management",
+    badge: "New",
+  },
+  {
+    icon: Zap,
+    title: "WardenClyffe-Q Engine",
+    description: "Information-gated energy extraction with demonic gating, billion-cycle phase governance, and thermodynamic audit.",
+    href: "/wardenclyffe",
+    category: "Simulation",
     badge: "New",
   },
 ]
