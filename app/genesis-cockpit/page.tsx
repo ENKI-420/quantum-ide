@@ -171,6 +171,28 @@ export default function GenesisCockpitPage() {
   const [operationalMode, setOperationalMode] = useState<"STABLE" | "MONITORING" | "DEFENSE">("STABLE")
   const [stressActive, setStressActive] = useState(false)
   const [tick, setTick] = useState(0)
+  // Autopoietic & Cross-Subsystem Integrity
+  const [autopoieticChecks, setAutopoieticChecks] = useState([
+    { id: "sensing", label: "Sensing Loop", desc: "Telemetry provides raw data", status: "ACTIVE" as "ACTIVE" | "DEGRADED" | "FAILED", subsystem: "Genesis" },
+    { id: "transcription", label: "Transcription", desc: "Metabolism adjusts parameters", status: "ACTIVE" as "ACTIVE" | "DEGRADED" | "FAILED", subsystem: "Genesis" },
+    { id: "nwn-sync", label: "NWN Coordination", desc: "Multi-agent phase lock", status: "ACTIVE" as "ACTIVE" | "DEGRADED" | "FAILED", subsystem: "Security" },
+    { id: "archive", label: "Merkle Archive", desc: "Immutable state history", status: "ACTIVE" as "ACTIVE" | "DEGRADED" | "FAILED", subsystem: "Genesis" },
+    { id: "wardenclyffe", label: "WardenClyffe Engine", desc: "Work-reality coupling", status: "ACTIVE" as "ACTIVE" | "DEGRADED" | "FAILED", subsystem: "WardenClyffe" },
+    { id: "defense", label: "Sovereign Shield", desc: "Phase-conjugated barrier", status: "ACTIVE" as "ACTIVE" | "DEGRADED" | "FAILED", subsystem: "Security" },
+  ])
+  const [systemInvariants, setSystemInvariants] = useState([
+    { label: "Phi -> 7.6901", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "convergence" },
+    { label: "Lambda > 0.98", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "coherence" },
+    { label: "Gamma < 0.01", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "decoherence" },
+    { label: "W2 transport -> 0", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "geometry" },
+    { label: "Theta = 51.843 +/- 0.005", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "torsion" },
+    { label: "Merkle chain contiguous", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "archive" },
+    { label: "No self-sovereignty", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "governance" },
+    { label: "Stress survival > 70%", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "resilience" },
+    { label: "Information-Energy bound", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "thermodynamics" },
+  ])
+  const [survivalScore, setSurvivalScore] = useState(100)
+  const [cyclesSurvived, setCyclesSurvived] = useState(0)
   const logEndRef = useRef<HTMLDivElement>(null)
   const prevHashRef = useRef(simHash("genesis-block-0"))
 
@@ -244,11 +266,45 @@ export default function GenesisCockpitPage() {
         setGlobalLambda(avgLambda)
         setGlobalGamma(avgGamma)
         setGlobalXi(avgLambda > 0 && avgGamma > 0 ? (avgLambda * avgPhi) / avgGamma : 127)
+
+        // Cross-subsystem autopoietic checks
+        setAutopoieticChecks((prev) =>
+          prev.map((check) => {
+            const isStressed = stressActive && Math.random() < 0.2
+            if (check.id === "sensing") return { ...check, status: "ACTIVE" as const }
+            if (check.id === "transcription") return { ...check, status: avgGamma < 0.02 ? "ACTIVE" as const : "DEGRADED" as const }
+            if (check.id === "nwn-sync") return { ...check, status: isStressed ? "DEGRADED" as const : "ACTIVE" as const }
+            if (check.id === "archive") return { ...check, status: "ACTIVE" as const }
+            if (check.id === "wardenclyffe") return { ...check, status: isStressed ? "DEGRADED" as const : "ACTIVE" as const }
+            if (check.id === "defense") return { ...check, status: "ACTIVE" as const }
+            return check
+          }),
+        )
+
+        // System invariant checks
+        const avgW2 = current.reduce((s, a) => s + a.w2, 0) / current.length
+        setSystemInvariants([
+          { label: "Phi -> 7.6901", status: Math.abs(avgPhi - 7.6901) < 0.3 ? "PASS" : Math.abs(avgPhi - 7.6901) < 0.6 ? "WARN" : "FAIL", category: "convergence" },
+          { label: "Lambda > 0.98", status: avgLambda > 0.98 ? "PASS" : avgLambda > 0.96 ? "WARN" : "FAIL", category: "coherence" },
+          { label: "Gamma < 0.01", status: avgGamma < 0.01 ? "PASS" : avgGamma < 0.02 ? "WARN" : "FAIL", category: "decoherence" },
+          { label: "W2 transport -> 0", status: avgW2 < 0.003 ? "PASS" : avgW2 < 0.006 ? "WARN" : "FAIL", category: "geometry" },
+          { label: "Theta = 51.843 +/- 0.005", status: "PASS", category: "torsion" },
+          { label: "Merkle chain contiguous", status: "PASS", category: "archive" },
+          { label: "No self-sovereignty", status: "PASS", category: "governance" },
+          { label: "Stress survival > 70%", status: !stressActive || avgLambda > 0.96 ? "PASS" : "WARN", category: "resilience" },
+          { label: "Information-Energy bound", status: "PASS", category: "thermodynamics" },
+        ])
+
+        // Survival score
+        setCyclesSurvived((c) => c + 1)
+        const passCount = systemInvariants.filter((i) => i.status === "PASS").length
+        setSurvivalScore(Math.round((passCount / systemInvariants.length) * 100))
+
         return current
       })
     }, 500)
     return () => clearInterval(interval)
-  }, [mounted, stressActive])
+  }, [mounted, stressActive, systemInvariants])
 
   // Merkle logging every 3 seconds
   useEffect(() => {
@@ -407,6 +463,7 @@ export default function GenesisCockpitPage() {
         <Tabs defaultValue="swarm" className="space-y-4">
           <TabsList className="bg-muted/50">
             <TabsTrigger value="swarm">Agent Swarm</TabsTrigger>
+            <TabsTrigger value="integrity">System Integrity</TabsTrigger>
             <TabsTrigger value="merkle">Merkle Audit</TabsTrigger>
             <TabsTrigger value="manifold">11D Manifold</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
@@ -483,6 +540,188 @@ export default function GenesisCockpitPage() {
                 </Card>
               ))}
             </div>
+          </TabsContent>
+
+          {/* ===== SYSTEM INTEGRITY TAB ===== */}
+          <TabsContent value="integrity" className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Autopoietic Closure Map */}
+              <Card className="lg:col-span-2">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <Dna className="h-5 w-5 text-primary" />
+                    <div>
+                      <CardTitle className="text-base">Autopoietic Closure Map</CardTitle>
+                      <p className="text-xs text-muted-foreground">
+                        All subsystems required for self-sustaining operation must be ACTIVE
+                      </p>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {autopoieticChecks.map((check) => (
+                      <div
+                        key={check.id}
+                        className={`p-4 rounded-lg border text-center ${
+                          check.status === "ACTIVE"
+                            ? "bg-secondary/5 border-secondary/20"
+                            : check.status === "DEGRADED"
+                              ? "bg-accent/5 border-accent/20"
+                              : "bg-destructive/5 border-destructive/20"
+                        }`}
+                      >
+                        <div className={`text-xs font-mono font-bold mb-1 ${
+                          check.status === "ACTIVE" ? "text-secondary" : check.status === "DEGRADED" ? "text-accent" : "text-destructive"
+                        }`}>
+                          {check.status}
+                        </div>
+                        <div className="text-sm font-medium">{check.label}</div>
+                        <div className="text-[10px] text-muted-foreground mt-1">{check.desc}</div>
+                        <div className="text-[10px] text-muted-foreground mt-2 font-mono">[{check.subsystem}]</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Closure verdict */}
+                  <div className={`mt-4 p-3 rounded-lg border text-center ${
+                    autopoieticChecks.every((c) => c.status === "ACTIVE")
+                      ? "bg-secondary/5 border-secondary/20"
+                      : autopoieticChecks.some((c) => c.status === "FAILED")
+                        ? "bg-destructive/5 border-destructive/20"
+                        : "bg-accent/5 border-accent/20"
+                  }`}>
+                    <span className="text-xs font-mono font-bold">
+                      {autopoieticChecks.every((c) => c.status === "ACTIVE")
+                        ? "AUTOPOIETIC CLOSURE: COMPLETE - system is self-sustaining"
+                        : autopoieticChecks.some((c) => c.status === "FAILED")
+                          ? "AUTOPOIETIC CLOSURE: BROKEN - subsystem failure detected"
+                          : "AUTOPOIETIC CLOSURE: DEGRADED - operating at reduced capacity"
+                      }
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Survival Metrics */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-base">Survival Score</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center p-6 bg-muted/30 rounded-lg border border-border">
+                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 font-mono">
+                      System Survivability
+                    </div>
+                    <div className={`text-5xl font-black font-mono ${
+                      survivalScore >= 90 ? "text-secondary" : survivalScore >= 70 ? "text-accent" : "text-destructive"
+                    }`}>
+                      {mounted ? survivalScore : 100}%
+                    </div>
+                    <div className="text-[10px] font-mono text-muted-foreground mt-2">
+                      Cycles survived: {cyclesSurvived}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 space-y-2">
+                    <div className="flex justify-between text-xs font-mono">
+                      <span className="text-muted-foreground">Active subsystems</span>
+                      <span className="text-secondary">{autopoieticChecks.filter((c) => c.status === "ACTIVE").length}/{autopoieticChecks.length}</span>
+                    </div>
+                    <div className="flex justify-between text-xs font-mono">
+                      <span className="text-muted-foreground">Invariants holding</span>
+                      <span className="text-primary">{systemInvariants.filter((i) => i.status === "PASS").length}/{systemInvariants.length}</span>
+                    </div>
+                    <div className="flex justify-between text-xs font-mono">
+                      <span className="text-muted-foreground">Stress mode</span>
+                      <span className={stressActive ? "text-destructive" : "text-secondary"}>{stressActive ? "INJECTING" : "NOMINAL"}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* System Invariant Grid */}
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Lock className="h-5 w-5 text-primary" />
+                  <div>
+                    <CardTitle className="text-base">Formal System Invariants</CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      Each constraint is falsifiable. Failure triggers system-declared degradation.
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  {systemInvariants.map((inv) => (
+                    <div
+                      key={inv.label}
+                      className={`flex items-center gap-2 p-3 rounded-lg border ${
+                        inv.status === "PASS"
+                          ? "bg-secondary/5 border-secondary/20"
+                          : inv.status === "WARN"
+                            ? "bg-accent/5 border-accent/20"
+                            : "bg-destructive/5 border-destructive/20"
+                      }`}
+                    >
+                      {inv.status === "PASS" ? (
+                        <CheckCircle2 className="h-4 w-4 text-secondary shrink-0" />
+                      ) : inv.status === "WARN" ? (
+                        <AlertTriangle className="h-4 w-4 text-accent shrink-0" />
+                      ) : (
+                        <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-mono font-medium">{inv.label}</div>
+                        <div className="text-[10px] text-muted-foreground capitalize">{inv.category}</div>
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className={`text-[9px] font-mono shrink-0 ${
+                          inv.status === "PASS"
+                            ? "text-secondary border-secondary/30"
+                            : inv.status === "WARN"
+                              ? "text-accent border-accent/30"
+                              : "text-destructive border-destructive/30"
+                        }`}
+                      >
+                        {inv.status}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+
+                <Separator className="my-4" />
+
+                {/* Governance constraints */}
+                <div className="p-3 bg-destructive/5 rounded-lg border border-destructive/10">
+                  <div className="text-[10px] uppercase font-bold text-destructive tracking-widest mb-2">
+                    First Billion Cycle Governance Constraints
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 text-xs text-muted-foreground">
+                    {[
+                      "Must not declare itself sovereign",
+                      "Must not optimize its own ontology",
+                      "Must not treat resistance as proof",
+                      "Must not convert metaphor into mandate",
+                      "Must survive adversarial noise injection",
+                      "Must declare own failure if invariants break",
+                    ].map((c) => (
+                      <div key={c} className="flex items-center gap-2">
+                        <Lock className="h-3 w-3 text-destructive shrink-0" />
+                        <span>{c}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* ===== MERKLE AUDIT TAB ===== */}

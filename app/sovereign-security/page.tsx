@@ -105,6 +105,29 @@ export default function SovereignSecurityPage() {
   ])
   const [showLockdown, setShowLockdown] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  // L2 Forensic & Integrity
+  const [macFingerprints, setMacFingerprints] = useState([
+    { id: "mac-1", device: "PARROT-NUCLEUS-01", mac: "52:54:00:12:34:56", virtualization: "None", safe: true },
+    { id: "mac-2", device: "STM32-EDGE-04", mac: "08:00:27:A1:B2:C3", virtualization: "None", safe: true },
+    { id: "mac-3", device: "GATEWAY-SEC-09", mac: "52:54:00:12:FF:EE", virtualization: "QEMU Detected", safe: false },
+    { id: "mac-4", device: "GKE-ORCHESTRATOR", mac: "02:42:AC:11:00:02", virtualization: "Docker Bridge", safe: true },
+  ])
+  const [torsionLock, setTorsionLock] = useState({ current: 51.843, target: 51.843, aligned: true })
+  const [ccceMetrics, setCcceMetrics] = useState({
+    lambda: { value: 0.9848, label: "Persistence", trend: [] as number[] },
+    phi: { value: 432.0, label: "Resonance", trend: [] as number[] },
+    xi: { value: 127.4, label: "Efficiency", trend: [] as number[] },
+    w: { value: 0.0018, label: "Geometric Drift", trend: [] as number[] },
+  })
+  const [systemInvariants, setSystemInvariants] = useState([
+    { label: "Coherence >= 90%", status: "PASS" as "PASS" | "FAIL" | "WARN" },
+    { label: "Decoherence Rate < 0.3", status: "PASS" as "PASS" | "FAIL" | "WARN" },
+    { label: "NWN All Agents Locked", status: "PASS" as "PASS" | "FAIL" | "WARN" },
+    { label: "Torsion Angle 51.843 +/- 0.005", status: "PASS" as "PASS" | "FAIL" | "WARN" },
+    { label: "No QEMU/Bochs on Critical Path", status: "WARN" as "PASS" | "FAIL" | "WARN" },
+    { label: "Merkle Chain Integrity", status: "PASS" as "PASS" | "FAIL" | "WARN" },
+    { label: "Fleet Integrity > 95%", status: "PASS" as "PASS" | "FAIL" | "WARN" },
+  ])
   const logEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -134,6 +157,38 @@ export default function SovereignSecurityPage() {
           }
         }),
       )
+
+      // CCCE Performance Matrix update
+      setCcceMetrics((prev) => {
+        const newLambda = 0.97 + Math.random() * 0.025
+        const newPhi = 431.5 + Math.random() * 1.0
+        const newXi = 120 + Math.random() * 20
+        const newW = Math.random() * 0.004
+        return {
+          lambda: { ...prev.lambda, value: newLambda, trend: [...prev.lambda.trend.slice(-19), newLambda] },
+          phi: { ...prev.phi, value: newPhi, trend: [...prev.phi.trend.slice(-19), newPhi] },
+          xi: { ...prev.xi, value: newXi, trend: [...prev.xi.trend.slice(-19), newXi] },
+          w: { ...prev.w, value: newW, trend: [...prev.w.trend.slice(-19), newW] },
+        }
+      })
+
+      // Torsion lock tracking
+      setTorsionLock((prev) => {
+        const drift = (Math.random() - 0.5) * 0.004
+        const current = 51.843 + drift
+        return { current, target: 51.843, aligned: Math.abs(drift) < 0.003 }
+      })
+
+      // System invariant checks
+      setSystemInvariants([
+        { label: "Coherence >= 90%", status: coherence >= 90 ? "PASS" : coherence >= 85 ? "WARN" : "FAIL" },
+        { label: "Decoherence Rate < 0.3", status: decoRate < 0.3 ? "PASS" : decoRate < 0.4 ? "WARN" : "FAIL" },
+        { label: "NWN All Agents Locked", status: nwnAgents.every((a) => a.status === "LOCKED") ? "PASS" : "WARN" },
+        { label: "Torsion Angle 51.843 +/- 0.005", status: torsionLock.aligned ? "PASS" : "WARN" },
+        { label: "No QEMU/Bochs on Critical Path", status: macFingerprints.some((m) => !m.safe) ? "WARN" : "PASS" },
+        { label: "Merkle Chain Integrity", status: "PASS" },
+        { label: "Fleet Integrity > 95%", status: integrity > 95 ? "PASS" : integrity > 92 ? "WARN" : "FAIL" },
+      ])
 
       // Random log events
       if (Math.random() > 0.6) {
@@ -329,6 +384,129 @@ export default function SovereignSecurityPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* CCCE Performance Matrix */}
+            <Card className="border-border">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-primary" />
+                  <CardTitle className="text-sm font-mono uppercase tracking-widest">
+                    CCCE Performance Matrix
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {Object.entries(ccceMetrics).map(([key, metric]) => {
+                    const symbols: Record<string, string> = { lambda: "\u039B", phi: "\u03A6", xi: "\u039E", w: "W" }
+                    const colors: Record<string, string> = { lambda: "text-primary", phi: "text-secondary", xi: "text-accent", w: "text-destructive" }
+                    return (
+                      <div key={key} className="bg-muted/30 rounded-lg p-3 border border-border">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className={`text-lg font-bold font-mono ${colors[key]}`}>{symbols[key]}</span>
+                          <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{metric.label}</span>
+                        </div>
+                        <div className={`text-xl font-bold font-mono ${colors[key]}`}>
+                          {mounted ? metric.value.toFixed(key === "w" ? 4 : key === "phi" ? 1 : 3) : "---"}
+                        </div>
+                        {/* Spark trend line */}
+                        <svg viewBox="0 0 100 24" className="w-full h-6 mt-2" preserveAspectRatio="none">
+                          {metric.trend.length > 1 && (
+                            <polyline
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              className={colors[key]}
+                              points={metric.trend.map((v, i) => {
+                                const min = Math.min(...metric.trend)
+                                const max = Math.max(...metric.trend)
+                                const range = max - min || 1
+                                const x = (i / (metric.trend.length - 1)) * 100
+                                const y = 22 - ((v - min) / range) * 20
+                                return `${x},${y}`
+                              }).join(" ")}
+                            />
+                          )}
+                        </svg>
+                      </div>
+                    )
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* L2 Forensic + Torsion + Invariants */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* L2 Forensic MAC Fingerprinting */}
+              <Card className="border-border">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <Fingerprint className="h-4 w-4 text-primary" />
+                    <CardTitle className="text-sm font-mono uppercase tracking-widest">
+                      L2 Forensic Monitor
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {macFingerprints.map((fp) => (
+                      <div key={fp.id} className={`flex items-center gap-3 p-2.5 rounded border ${fp.safe ? "border-border bg-muted/20" : "border-accent/30 bg-accent/5"}`}>
+                        <div className={`w-2 h-2 rounded-full ${fp.safe ? "bg-secondary" : "bg-accent animate-pulse"}`} />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-mono font-medium truncate">{fp.device}</div>
+                          <div className="text-[10px] text-muted-foreground font-mono">{fp.mac}</div>
+                        </div>
+                        <Badge variant="outline" className={`text-[9px] font-mono ${fp.safe ? "text-secondary border-secondary/30" : "text-accent border-accent/30"}`}>
+                          {fp.virtualization}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex items-center gap-2 p-2 rounded bg-muted/20 border border-border">
+                    <span className="text-[10px] font-mono text-muted-foreground">Torsion Lock:</span>
+                    <span className={`text-xs font-bold font-mono ${torsionLock.aligned ? "text-secondary" : "text-accent"}`}>
+                      {mounted ? torsionLock.current.toFixed(3) : "51.843"} deg
+                    </span>
+                    <Badge variant="outline" className={`text-[9px] ml-auto ${torsionLock.aligned ? "text-secondary border-secondary/30" : "text-accent border-accent/30"}`}>
+                      {torsionLock.aligned ? "ALIGNED" : "DRIFT"}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* System Invariant Checks */}
+              <Card className="border-border">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4 text-primary" />
+                    <CardTitle className="text-sm font-mono uppercase tracking-widest">
+                      System Invariants
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-1.5">
+                  {systemInvariants.map((inv) => (
+                    <div key={inv.label} className={`flex items-center gap-2 p-2 rounded border ${
+                      inv.status === "PASS" ? "border-secondary/20 bg-secondary/5" : inv.status === "WARN" ? "border-accent/20 bg-accent/5" : "border-destructive/20 bg-destructive/5"
+                    }`}>
+                      <CheckCircle2 className={`h-3.5 w-3.5 shrink-0 ${
+                        inv.status === "PASS" ? "text-secondary" : inv.status === "WARN" ? "text-accent" : "text-destructive"
+                      }`} />
+                      <span className="text-xs font-mono flex-1">{inv.label}</span>
+                      <Badge variant="outline" className={`text-[9px] font-mono ${
+                        inv.status === "PASS" ? "text-secondary border-secondary/30" : inv.status === "WARN" ? "text-accent border-accent/30" : "text-destructive border-destructive/30"
+                      }`}>{inv.status}</Badge>
+                    </div>
+                  ))}
+                  <div className="mt-3 p-2 bg-muted/30 rounded border border-border text-center">
+                    <span className="text-[10px] font-mono text-muted-foreground">
+                      {systemInvariants.filter((i) => i.status === "PASS").length}/{systemInvariants.length} invariants holding |{" "}
+                      {systemInvariants.filter((i) => i.status === "FAIL").length} failures
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Q-SLICE Folding Status */}
             <Card className="border-border">
