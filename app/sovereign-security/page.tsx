@@ -129,6 +129,13 @@ export default function SovereignSecurityPage() {
     { label: "Fleet Integrity > 95%", status: "PASS" as "PASS" | "FAIL" | "WARN" },
   ])
   const logEndRef = useRef<HTMLDivElement>(null)
+  // Refs for latest state in telemetry loop
+  const coherenceRef = useRef(coherence)
+  const decoRateRef = useRef(decoRate)
+  const integrityRef = useRef(integrity)
+  useEffect(() => { coherenceRef.current = coherence }, [coherence])
+  useEffect(() => { decoRateRef.current = decoRate }, [decoRate])
+  useEffect(() => { integrityRef.current = integrity }, [integrity])
 
   useEffect(() => {
     setMounted(true)
@@ -145,16 +152,15 @@ export default function SovereignSecurityPage() {
       setDeco((prev) => Math.max(0.01, Math.min(0.5, prev + (Math.random() - 0.5) * 0.02)))
 
       // NWN agent simulation
+      let allLocked = true
       setNwnAgents((prev) =>
         prev.map((a) => {
           const drift = (Math.random() - 0.5) * 0.002
           const newPhase = 51.843 + drift
           const absDrift = Math.abs(drift)
-          return {
-            ...a,
-            phase: newPhase,
-            status: (absDrift > 0.001 ? "DRIFTING" : "LOCKED") as "LOCKED" | "DRIFTING",
-          }
+          const newStatus = (absDrift > 0.001 ? "DRIFTING" : "LOCKED") as "LOCKED" | "DRIFTING"
+          if (newStatus !== "LOCKED") allLocked = false
+          return { ...a, phase: newPhase, status: newStatus }
         }),
       )
 
@@ -173,21 +179,23 @@ export default function SovereignSecurityPage() {
       })
 
       // Torsion lock tracking
-      setTorsionLock((prev) => {
-        const drift = (Math.random() - 0.5) * 0.004
-        const current = 51.843 + drift
-        return { current, target: 51.843, aligned: Math.abs(drift) < 0.003 }
-      })
+      const torsionDrift = (Math.random() - 0.5) * 0.004
+      const torsionAligned = Math.abs(torsionDrift) < 0.003
+      setTorsionLock({ current: 51.843 + torsionDrift, target: 51.843, aligned: torsionAligned })
 
-      // System invariant checks
+      // System invariant checks (use refs for latest values + inline-computed values)
+      const coh = coherenceRef.current
+      const dr = decoRateRef.current
+      const integ = integrityRef.current
+      const hasUnsafe = macFingerprints.some((m) => !m.safe)
       setSystemInvariants([
-        { label: "Coherence >= 90%", status: coherence >= 90 ? "PASS" : coherence >= 85 ? "WARN" : "FAIL" },
-        { label: "Decoherence Rate < 0.3", status: decoRate < 0.3 ? "PASS" : decoRate < 0.4 ? "WARN" : "FAIL" },
-        { label: "NWN All Agents Locked", status: nwnAgents.every((a) => a.status === "LOCKED") ? "PASS" : "WARN" },
-        { label: "Torsion Angle 51.843 +/- 0.005", status: torsionLock.aligned ? "PASS" : "WARN" },
-        { label: "No QEMU/Bochs on Critical Path", status: macFingerprints.some((m) => !m.safe) ? "WARN" : "PASS" },
-        { label: "Merkle Chain Integrity", status: "PASS" },
-        { label: "Fleet Integrity > 95%", status: integrity > 95 ? "PASS" : integrity > 92 ? "WARN" : "FAIL" },
+        { label: "Coherence >= 90%", status: (coh >= 90 ? "PASS" : coh >= 85 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN" },
+        { label: "Decoherence Rate < 0.3", status: (dr < 0.3 ? "PASS" : dr < 0.4 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN" },
+        { label: "NWN All Agents Locked", status: (allLocked ? "PASS" : "WARN") as "PASS" | "FAIL" | "WARN" },
+        { label: "Torsion Angle 51.843 +/- 0.005", status: (torsionAligned ? "PASS" : "WARN") as "PASS" | "FAIL" | "WARN" },
+        { label: "No QEMU/Bochs on Critical Path", status: (hasUnsafe ? "WARN" : "PASS") as "PASS" | "FAIL" | "WARN" },
+        { label: "Merkle Chain Integrity", status: "PASS" as "PASS" | "FAIL" | "WARN" },
+        { label: "Fleet Integrity > 95%", status: (integ > 95 ? "PASS" : integ > 92 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN" },
       ])
 
       // Random log events

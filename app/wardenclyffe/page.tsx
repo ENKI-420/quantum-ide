@@ -121,6 +121,27 @@ export default function WardenClyffePage() {
   const cycleRef = useRef(0)
   const logEndRef = useRef<HTMLDivElement>(null)
   const prevPhiRef = useRef(0)
+  // Refs to avoid stale closures in the telemetry interval
+  const noeticPowerRef = useRef(noeticPower)
+  const chiGainRef = useRef(chiGain)
+  const wallEnergyRef = useRef(wallEnergy)
+  const gateRef = useRef(gate)
+  const demonAuditScoreRef = useRef(demonAuditScore)
+  const entropyGradientRef = useRef(entropyGradient)
+  const gateOpenRateRef = useRef(gateOpenRate)
+  const adversarialNoiseRef = useRef(adversarialNoise)
+  const thermalLeakageRef = useRef(thermalLeakage)
+
+  // Keep refs synced
+  useEffect(() => { noeticPowerRef.current = noeticPower }, [noeticPower])
+  useEffect(() => { chiGainRef.current = chiGain }, [chiGain])
+  useEffect(() => { wallEnergyRef.current = wallEnergy }, [wallEnergy])
+  useEffect(() => { gateRef.current = gate }, [gate])
+  useEffect(() => { demonAuditScoreRef.current = demonAuditScore }, [demonAuditScore])
+  useEffect(() => { entropyGradientRef.current = entropyGradient }, [entropyGradient])
+  useEffect(() => { gateOpenRateRef.current = gateOpenRate }, [gateOpenRate])
+  useEffect(() => { adversarialNoiseRef.current = adversarialNoise }, [adversarialNoise])
+  useEffect(() => { thermalLeakageRef.current = thermalLeakage }, [thermalLeakage])
 
   useEffect(() => {
     setMounted(true)
@@ -199,58 +220,70 @@ export default function WardenClyffePage() {
         return current
       })
 
-      // Phase III: Work-Reality Coupling metrics
+      // Phase III: Work-Reality Coupling metrics (read refs for latest values)
       if (isExtracting) {
+        const np = noeticPowerRef.current
+        const cg = chiGainRef.current
         // Wall-clock energy per kFLOP (should decrease if engine is real)
         setWallEnergy((prev) => {
-          const delta = noeticPower > 0.5 ? -0.008 : 0.002
+          const delta = np > 0.5 ? -0.008 : 0.002
           return Math.max(90, Math.min(110, prev + delta + (Math.random() - 0.5) * 0.1))
         })
         // Error correction margin (should improve)
         setErrorMargin((prev) => {
-          const improvement = noeticPower > 1.0 ? -0.00005 : 0.00002
+          const improvement = np > 1.0 ? -0.00005 : 0.00002
           return Math.max(0.005, Math.min(0.04, prev + improvement + (Math.random() - 0.5) * 0.0001))
         })
         // Thermal variance under load (should decrease)
         setThermalVariance((prev) => {
-          const cooling = chiGain > 1.2 ? -0.003 : 0.001
+          const cooling = cg > 1.2 ? -0.003 : 0.001
           return Math.max(0.2, Math.min(2.0, prev + cooling + (Math.random() - 0.5) * 0.02))
         })
         // Cumulative delta_E (negative = real coupling)
-        setCouplingDeltaE((prev) => prev + (wallEnergy - 100) * 0.001)
+        setCouplingDeltaE((prev) => prev + (wallEnergyRef.current - 100) * 0.001)
         // Compute delta (should remain ~0 to prove iso-compute)
         setCouplingCompute((prev) => prev + (Math.random() - 0.5) * 0.001)
       }
 
-      // System integrity validation
-      setIntegrityChecks((prev) =>
-        prev.map((check) => {
-          switch (check.id) {
-            case "thermo-bound":
-              return { ...check, status: gate.totalWork <= gate.totalWork * 1.3 ? "PASS" : "FAIL" }
-            case "gate-fidelity":
-              return { ...check, status: demonAuditScore >= 90 ? "PASS" : demonAuditScore >= 70 ? "WARN" : "FAIL" }
-            case "entropy-neg":
-              return { ...check, status: entropyGradient <= 0 ? "PASS" : entropyGradient < 0.005 ? "WARN" : "FAIL" }
-            case "chi-satiation":
-              return { ...check, status: chiGain >= 1.4 ? "PASS" : chiGain >= 1.0 ? "WARN" : "FAIL" }
-            case "thermal-vacuum":
-              return { ...check, status: thermalLeakage < 1e-12 ? "PASS" : thermalLeakage < 1e-10 ? "WARN" : "FAIL" }
-            case "phase-monotone": {
-              const currentPhi = chiGain * 4.5 // derived phi proxy
-              const pass = currentPhi >= prevPhiRef.current - 0.01
-              prevPhiRef.current = currentPhi
-              return { ...check, status: pass ? "PASS" : "WARN" }
+      // System integrity validation (read refs for latest values)
+      {
+        const currentGate = gateRef.current
+        const das = demonAuditScoreRef.current
+        const eg = entropyGradientRef.current
+        const cg = chiGainRef.current
+        const tl = thermalLeakageRef.current
+        const an = adversarialNoiseRef.current
+        const gor = gateOpenRateRef.current
+
+        setIntegrityChecks((prev) =>
+          prev.map((check) => {
+            switch (check.id) {
+              case "thermo-bound":
+                return { ...check, status: (currentGate.totalWork <= currentGate.totalWork * 1.3 ? "PASS" : "FAIL") as "PASS" | "FAIL" | "WARN" }
+              case "gate-fidelity":
+                return { ...check, status: (das >= 90 ? "PASS" : das >= 70 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN" }
+              case "entropy-neg":
+                return { ...check, status: (eg <= 0 ? "PASS" : eg < 0.005 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN" }
+              case "chi-satiation":
+                return { ...check, status: (cg >= 1.4 ? "PASS" : cg >= 1.0 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN" }
+              case "thermal-vacuum":
+                return { ...check, status: (tl < 1e-12 ? "PASS" : tl < 1e-10 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN" }
+              case "phase-monotone": {
+                const currentPhi = cg * 4.5 // derived phi proxy
+                const pass = currentPhi >= prevPhiRef.current - 0.01
+                prevPhiRef.current = currentPhi
+                return { ...check, status: (pass ? "PASS" : "WARN") as "PASS" | "FAIL" | "WARN" }
+              }
+              case "no-self-sovereign":
+                return { ...check, status: "PASS" as "PASS" | "FAIL" | "WARN" } // Always enforced by design
+              case "adversarial-survival":
+                return { ...check, status: (an ? (gor > 30 ? "PASS" : "WARN") : "PASS") as "PASS" | "FAIL" | "WARN" }
+              default:
+                return check
             }
-            case "no-self-sovereign":
-              return { ...check, status: "PASS" } // Always enforced by design
-            case "adversarial-survival":
-              return { ...check, status: adversarialNoise ? (gateOpenRate > 30 ? "PASS" : "WARN") : "PASS" }
-            default:
-              return check
-          }
-        }),
-      )
+          }),
+        )
+      }
 
       // Phase progress
       setPhaseStates((prev) =>

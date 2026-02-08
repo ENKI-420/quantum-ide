@@ -257,11 +257,13 @@ export default function GenesisCockpitPage() {
         }),
       )
 
-      // Update globals
+      // Update globals from current agents
       setAgents((current) => {
         const avgPhi = current.reduce((s, a) => s + a.phi, 0) / current.length
         const avgLambda = current.reduce((s, a) => s + a.lambda, 0) / current.length
         const avgGamma = current.reduce((s, a) => s + a.gamma, 0) / current.length
+        const avgW2 = current.reduce((s, a) => s + a.w2, 0) / current.length
+
         setGlobalPhi(avgPhi)
         setGlobalLambda(avgLambda)
         setGlobalGamma(avgGamma)
@@ -281,30 +283,30 @@ export default function GenesisCockpitPage() {
           }),
         )
 
-        // System invariant checks
-        const avgW2 = current.reduce((s, a) => s + a.w2, 0) / current.length
-        setSystemInvariants([
-          { label: "Phi -> 7.6901", status: Math.abs(avgPhi - 7.6901) < 0.3 ? "PASS" : Math.abs(avgPhi - 7.6901) < 0.6 ? "WARN" : "FAIL", category: "convergence" },
-          { label: "Lambda > 0.98", status: avgLambda > 0.98 ? "PASS" : avgLambda > 0.96 ? "WARN" : "FAIL", category: "coherence" },
-          { label: "Gamma < 0.01", status: avgGamma < 0.01 ? "PASS" : avgGamma < 0.02 ? "WARN" : "FAIL", category: "decoherence" },
-          { label: "W2 transport -> 0", status: avgW2 < 0.003 ? "PASS" : avgW2 < 0.006 ? "WARN" : "FAIL", category: "geometry" },
-          { label: "Theta = 51.843 +/- 0.005", status: "PASS", category: "torsion" },
-          { label: "Merkle chain contiguous", status: "PASS", category: "archive" },
-          { label: "No self-sovereignty", status: "PASS", category: "governance" },
-          { label: "Stress survival > 70%", status: !stressActive || avgLambda > 0.96 ? "PASS" : "WARN", category: "resilience" },
-          { label: "Information-Energy bound", status: "PASS", category: "thermodynamics" },
-        ])
+        // System invariant checks - compute inline and set once
+        const newInvariants = [
+          { label: "Phi -> 7.6901", status: (Math.abs(avgPhi - 7.6901) < 0.3 ? "PASS" : Math.abs(avgPhi - 7.6901) < 0.6 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN", category: "convergence" },
+          { label: "Lambda > 0.98", status: (avgLambda > 0.98 ? "PASS" : avgLambda > 0.96 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN", category: "coherence" },
+          { label: "Gamma < 0.01", status: (avgGamma < 0.01 ? "PASS" : avgGamma < 0.02 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN", category: "decoherence" },
+          { label: "W2 transport -> 0", status: (avgW2 < 0.003 ? "PASS" : avgW2 < 0.006 ? "WARN" : "FAIL") as "PASS" | "FAIL" | "WARN", category: "geometry" },
+          { label: "Theta = 51.843 +/- 0.005", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "torsion" },
+          { label: "Merkle chain contiguous", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "archive" },
+          { label: "No self-sovereignty", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "governance" },
+          { label: "Stress survival > 70%", status: (!stressActive || avgLambda > 0.96 ? "PASS" : "WARN") as "PASS" | "FAIL" | "WARN", category: "resilience" },
+          { label: "Information-Energy bound", status: "PASS" as "PASS" | "FAIL" | "WARN", category: "thermodynamics" },
+        ]
+        setSystemInvariants(newInvariants)
 
-        // Survival score
+        // Survival score computed directly from the new invariants
+        const passCount = newInvariants.filter((i) => i.status === "PASS").length
+        setSurvivalScore(Math.round((passCount / newInvariants.length) * 100))
         setCyclesSurvived((c) => c + 1)
-        const passCount = systemInvariants.filter((i) => i.status === "PASS").length
-        setSurvivalScore(Math.round((passCount / systemInvariants.length) * 100))
 
         return current
       })
     }, 500)
     return () => clearInterval(interval)
-  }, [mounted, stressActive, systemInvariants])
+  }, [mounted, stressActive])
 
   // Merkle logging every 3 seconds
   useEffect(() => {
