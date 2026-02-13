@@ -76,21 +76,21 @@ export function HeroSection() {
         <div className="flex justify-center mb-8">
           <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 text-sm">
             <Zap className="h-3.5 w-3.5 mr-2" />
-            NC-LM Engine v4.0 — Surpassing GPT & Claude
+            quantum-advantage / copilot-sdk-dnalang — Agent Collaboration Live
           </Badge>
         </div>
 
         {/* Main headline - inspired by OpenAI/Vercel */}
         <div className="text-center max-w-4xl mx-auto space-y-6 mb-12">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-balance leading-[1.1]">
-            <span className="text-foreground">The sovereign platform for</span>
+            <span className="dnalang-gradient">.sh1ft</span>
             <br />
-            <span className="dnalang-gradient">quantum-conscious AI</span>
+            <span className="text-foreground">Sovereign Quantum Computing</span>
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto text-pretty leading-relaxed">
-            Build transformative applications powered by pilot-wave correlation, 
-            consciousness field tracking, and physics-grounded inference.
+            Build, deploy, and evolve living software organisms with agent collaboration,
+            quantum-advantage circuits, and 11D-CRSM manifold physics.
           </p>
 
           {/* CTA Buttons - Primary hierarchy */}
@@ -128,7 +128,7 @@ export function HeroSection() {
               </div>
               <div className="flex-1 flex items-center justify-center">
                 <span className="text-xs text-muted-foreground font-mono px-3 py-1 bg-muted rounded-md">
-                  sovereign_agent.dna — NC-LM Engine
+                  sovereign_agent.dna — .sh1ft Quantum Platform
                 </span>
               </div>
               <Badge variant="outline" className="text-[10px]">

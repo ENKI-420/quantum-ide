@@ -30,6 +30,8 @@ import {
   Lock,
   Dna,
   Zap,
+  Network,
+  Cpu,
 } from "lucide-react"
 
 const platformFeatures = [
@@ -153,6 +155,22 @@ const platformFeatures = [
     category: "Simulation",
     badge: "New",
   },
+  {
+    icon: Network,
+    title: "Agent Collaboration",
+    description: "AURA, AIDEN, IRIS, OSIRIS — autonomous agents coordinating across 11D manifolds with GWT broadcasting.",
+    href: "/agent-collaboration",
+    category: "AI Tools",
+    badge: "New",
+  },
+  {
+    icon: Cpu,
+    title: "Digital Twin Engine",
+    description: "Genomic twin simulation on 127-qubit QPUs with 86.9% Bell fidelity and QWC Level 3 optimization.",
+    href: "/digital-twin",
+    category: "Simulation",
+    badge: "New",
+  },
 ]
 
 const userJourneySteps = [
@@ -198,6 +216,7 @@ const categories = [
   "Core IDE",
   "Visual Tools",
   "AI Tools",
+  "Simulation",
   "Ecosystem",
   "Management",
   "Customization",
@@ -254,7 +273,7 @@ export default function Page() {
             </Badge>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Everything You Need to Build</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              A comprehensive suite of tools for creating quantum-conscious applications with DNA-Lang.
+              A comprehensive suite of tools for sovereign quantum computing with .sh1ft.
             </p>
           </div>
 

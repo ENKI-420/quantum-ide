@@ -141,6 +141,13 @@ const navGroups = [
         shortcut: "S W",
       },
       {
+        href: "/agent-collaboration",
+        label: "Agent Collaboration",
+        icon: Network,
+        description: "Quantum agent mesh",
+        shortcut: "S A",
+      },
+      {
         href: "/osiris-copilot",
         label: "Osiris Copilot",
         icon: Radio,
@@ -421,13 +428,13 @@ export function Navigation() {
             <Link
               href="/"
               className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md"
-              aria-label="DNA::}{::lang Home"
+              aria-label=".sh1ft Home"
             >
               <div className="p-1.5 bg-primary/10 rounded-md">
                 <Dna className="h-5 w-5 text-primary" aria-hidden="true" />
               </div>
               <span className="font-semibold text-sm hidden sm:block">
-                <span className="dnalang-gradient">DNA::&#125;&#123;::lang</span>
+                <span className="dnalang-gradient">.sh1ft</span>
               </span>
             </Link>
 

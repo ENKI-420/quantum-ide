@@ -41,6 +41,7 @@ import {
   Swords,
   Brain,
   CreditCard,
+  Network, // Network icon imported
 } from "lucide-react"
 
 const bottomNavItems = [
@@ -58,6 +59,7 @@ const menuSections = [
       { icon: Bot, label: "IRIS Engine", href: "/shift-platform/iris", description: "Multi-agent orchestration" },
       { icon: Swords, label: "Code Arena", href: "/shift-platform/code-arena", description: "AI coding battles" },
       { icon: Radio, label: "Osiris Copilot", href: "/osiris-copilot", description: "Holographic interface" },
+      { icon: Network, label: "Agent Collaboration", href: "/agent-collaboration", description: "Quantum agent mesh" },
     ],
   },
   {
@@ -190,8 +192,8 @@ export function MobileNav() {
                             <Dna className="h-5 w-5 text-primary" />
                           </div>
                           <div>
-                            <span className="dnalang-gradient font-bold">{"DNA::}{::lang"}</span>
-                            <p className="text-xs text-muted-foreground font-normal">SHIFT MCP Platform</p>
+                            <span className="dnalang-gradient font-bold">.sh1ft</span>
+                            <p className="text-xs text-muted-foreground font-normal">Sovereign Quantum Platform</p>
                           </div>
                         </SheetTitle>
                       </SheetHeader>
