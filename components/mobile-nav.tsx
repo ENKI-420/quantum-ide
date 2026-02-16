@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -195,8 +195,9 @@ export function MobileNav() {
                             <span className="dnalang-gradient font-bold">.sh1ft</span>
                             <p className="text-xs text-muted-foreground font-normal">Sovereign Quantum Platform</p>
                           </div>
-                        </SheetTitle>
-                      </SheetHeader>
+          </SheetTitle>
+          <SheetDescription className="sr-only">Platform navigation menu</SheetDescription>
+          </SheetHeader>
 
                       <div className="flex gap-2 py-3">
                         {quickActions.map((action) => (
