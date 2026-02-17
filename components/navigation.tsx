@@ -203,7 +203,7 @@ const navGroups = [
       },
       {
         href: "/sovereign-cockpit",
-        label: "Sovereign Cockpit",
+        label: "System Cockpit",
         icon: Shield,
         description: "Phase-Conjugate Genesis",
         shortcut: "A S",
@@ -334,7 +334,7 @@ const navGroups = [
       },
       {
         href: "/sovereign-stack",
-        label: "Sovereign Stack",
+        label: "Platform Stack",
         icon: Shield,
         description: "SSRA & Triadic Governance",
         shortcut: "R S",
@@ -632,7 +632,7 @@ export function Navigation() {
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + $</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Sovereign Stack</span>
+                    <span>Platform Stack</span>
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + V</kbd>
                   </div>
                   <div className="flex justify-between text-sm">

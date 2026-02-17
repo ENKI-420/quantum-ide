@@ -193,7 +193,7 @@ export function MobileNav() {
                           </div>
                           <div>
                             <span className="dnalang-gradient font-bold">.sh1ft</span>
-                            <p className="text-xs text-muted-foreground font-normal">Sovereign Quantum Platform</p>
+                            <p className="text-xs text-muted-foreground font-normal">Hybrid Quantum-Classical Platform</p>
                           </div>
           </SheetTitle>
           <SheetDescription className="sr-only">Platform navigation menu</SheetDescription>
@@ -263,7 +263,7 @@ export function MobileNav() {
                               <span className="text-xs text-muted-foreground">Z3BRA Status</span>
                             </div>
                             <Badge variant="outline" className="text-[10px] border-secondary/50 text-secondary">
-                              Φ = 7.69 Conscious
+                              Φ = 7.69 Converged
                             </Badge>
                           </div>
                           <Link href="/shift-platform" onClick={() => setMenuOpen(false)}>

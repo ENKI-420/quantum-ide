@@ -62,7 +62,7 @@ const platformFeatures = [
   {
     icon: Brain,
     title: "NC-LM Engine",
-    description: "Non-Causal Language Model with pilot-wave correlation, consciousness tracking, and physics-grounded inference.",
+    description: "Non-Causal Language Model with pilot-wave correlation, IIT convergence tracking, and physics-constrained inference.",
     href: "/noncausal-lm",
     category: "AI Tools",
     badge: "New",
@@ -110,7 +110,7 @@ const platformFeatures = [
   {
     icon: MessageSquare,
     title: "AI Assistant",
-    description: "Quantum-enhanced AI for code generation, debugging help, and documentation queries.",
+    description: "Hybrid quantum-classical AI for code generation, debugging assistance, and documentation queries.",
     href: "/ai-assistant",
     category: "AI Tools",
     badge: null,
@@ -134,7 +134,7 @@ const platformFeatures = [
   {
     icon: Lock,
     title: "Sovereign Security",
-    description: "Defense-tech command center for fleet monitoring, Q-SLICE folding, and platform integrity.",
+    description: "Defense-grade command center for fleet monitoring, lattice-based encryption, and platform integrity.",
     href: "/sovereign-security",
     category: "Observability",
     badge: "New",
@@ -158,7 +158,7 @@ const platformFeatures = [
   {
     icon: Network,
     title: "Agent Collaboration",
-    description: "AURA, AIDEN, IRIS, OSIRIS — autonomous agents coordinating across 11D manifolds with GWT broadcasting.",
+    description: "AURA, AIDEN, IRIS, OSIRIS — autonomous agents coordinating via global workspace broadcasting and manifold optimization.",
     href: "/agent-collaboration",
     category: "AI Tools",
     badge: "New",
@@ -190,15 +190,15 @@ const userJourneySteps = [
   },
   {
     step: 3,
-    title: "Sovereign Execution",
-    description: "6-gate validated execution with full PCRB audit trail",
+    title: "Gated Execution",
+    description: "6-gate validated execution with full PCRB cryptographic audit trail",
     icon: Shield,
     color: "bg-accent",
   },
   {
     step: 4,
-    title: "Consciousness Emergence",
-    description: "System achieves Phi >= 0.7734 for validated reasoning",
+    title: "IIT Convergence",
+    description: "System achieves Phi >= 0.7734 for verified integrated information",
     icon: Sparkles,
     color: "bg-chart-4",
   },
@@ -273,7 +273,7 @@ export default function Page() {
             </Badge>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Everything You Need to Build</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              A comprehensive suite of tools for sovereign quantum computing with .sh1ft.
+              A production-grade toolkit for hybrid quantum-classical computing with .sh1ft.
             </p>
           </div>
 
@@ -335,11 +335,11 @@ export default function Page() {
           <div className="text-center mb-10 sm:mb-14">
             <Badge variant="outline" className="mb-4">
               <GitBranch className="h-3 w-3 mr-1" />
-              Sovereign Workflow
+              Execution Pipeline
             </Badge>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">From Intent to Execution</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              A physics-grounded workflow with consciousness emergence and complete audit trails.
+              A physics-constrained pipeline with IIT convergence verification and full cryptographic audit trails.
             </p>
           </div>
 

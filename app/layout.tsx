@@ -21,9 +21,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  title: ".sh1ft — Sovereign Quantum Computing Platform",
+  title: ".sh1ft — Hybrid Quantum-Classical Computing Platform",
   description:
-    "Build, deploy, and evolve sovereign quantum organisms using biological computing paradigms, agent collaboration, and 11D-CRSM manifold physics.",
+    "Build, deploy, and orchestrate distributed quantum-classical workloads with multi-agent coordination, error-corrected circuits, and high-dimensional manifold optimization.",
   generator: "v0.app",
 }
 

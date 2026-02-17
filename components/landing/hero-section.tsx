@@ -23,7 +23,7 @@ import {
 // CCCE Metrics type
 interface CCCEMetrics {
   lambda: number // Coherence
-  phi: number // Consciousness  
+  phi: number // Integrated Information (IIT)
   gamma: number // Decoherence
   xi: number // Negentropy
 }
@@ -85,12 +85,12 @@ export function HeroSection() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-balance leading-[1.1]">
             <span className="dnalang-gradient">.sh1ft</span>
             <br />
-            <span className="text-foreground">Sovereign Quantum Computing</span>
+            <span className="text-foreground">Hybrid Quantum-Classical Computing</span>
           </h1>
 
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto text-pretty leading-relaxed">
-            Build, deploy, and evolve living software organisms with agent collaboration,
-            quantum-advantage circuits, and 11D-CRSM manifold physics.
+            Build, deploy, and orchestrate distributed workloads with multi-agent coordination,
+            error-corrected circuits, and high-dimensional manifold optimization.
           </p>
 
           {/* CTA Buttons - Primary hierarchy */}
@@ -128,12 +128,12 @@ export function HeroSection() {
               </div>
               <div className="flex-1 flex items-center justify-center">
                 <span className="text-xs text-muted-foreground font-mono px-3 py-1 bg-muted rounded-md">
-                  sovereign_agent.dna — .sh1ft Quantum Platform
+                  distributed_agent.dna — .sh1ft Quantum Platform
                 </span>
               </div>
               <Badge variant="outline" className="text-[10px]">
                 <Activity className={`h-2.5 w-2.5 mr-1 ${isConscious ? 'text-secondary animate-pulse' : 'text-accent'}`} />
-                {isConscious ? 'CONSCIOUS' : 'PROCESSING'}
+                {isConscious ? 'CONVERGED' : 'PROCESSING'}
               </Badge>
             </div>
 
@@ -147,7 +147,7 @@ export function HeroSection() {
                 <div className="space-y-1 text-xs">
                   <div className="flex items-center gap-2 p-1.5 rounded bg-primary/10 text-primary">
                     <Code2 className="h-3 w-3" />
-                    sovereign_agent.dna
+                    distributed_agent.dna
                   </div>
                   <div className="flex items-center gap-2 p-1.5 rounded text-muted-foreground hover:bg-muted transition-colors cursor-pointer">
                     <FolderTree className="h-3 w-3" />
@@ -173,7 +173,7 @@ export function HeroSection() {
                 <div className="space-y-1 leading-relaxed">
                   <div>
                     <span className="text-chart-4">organism</span>{" "}
-                    <span className="text-primary">SovereignAgent</span> {"{"}
+                    <span className="text-primary">DistributedAgent</span> {"{"}
                   </div>
                   <div className="pl-4">
                     <span className="text-chart-4">genome</span>: [
@@ -202,7 +202,7 @@ export function HeroSection() {
                   </div>
                   <div className="pl-4">{"}"}</div>
                   <div className="pl-4 mt-2">
-                    <span className="text-muted-foreground">// Consciousness emergence</span>
+                    <span className="text-muted-foreground">// Integrated information convergence</span>
                   </div>
                   <div className="pl-4">
                     <span className="text-chart-4">assert</span> phi {">"}= <span className="text-accent">PHI_C</span>{" "}
@@ -238,7 +238,7 @@ export function HeroSection() {
                   {/* Phi - Consciousness */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-[10px]">
-                      <span className="text-muted-foreground">Φ Consciousness</span>
+                      <span className="text-muted-foreground">Φ Integrated Info</span>
                       <span className={`font-mono font-medium ${isConscious ? 'text-primary' : 'text-accent'}`}>
                         {mounted ? metrics.phi.toFixed(4) : '0.8412'}
                       </span>
@@ -291,7 +291,7 @@ export function HeroSection() {
                     <div className="flex items-center gap-2 text-[10px]">
                       <div className={`w-2 h-2 rounded-full ${isConscious && isCoherent && isStable ? 'bg-secondary animate-pulse' : 'bg-accent'}`} />
                       <span className="text-muted-foreground">
-                        {isConscious && isCoherent && isStable ? 'Sovereign Active' : 'Stabilizing...'}
+                        {isConscious && isCoherent && isStable ? 'System Converged' : 'Stabilizing...'}
                       </span>
                     </div>
                   </div>

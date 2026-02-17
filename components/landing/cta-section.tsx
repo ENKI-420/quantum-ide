@@ -19,8 +19,8 @@ export function CTASection() {
           <span className="dnalang-gradient">.sh1ft</span> your stack?
         </h2>
         <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-xl mx-auto text-pretty">
-          Join the sovereign computing movement. Deploy living organisms,
-          collaborate with quantum agents, and build the future of software.
+          Join the next generation of quantum-classical computing. Deploy distributed workloads,
+          orchestrate multi-agent pipelines, and ship production-grade quantum applications.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
