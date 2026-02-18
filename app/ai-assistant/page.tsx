@@ -272,9 +272,11 @@ function AIAssistantContent() {
                       <div className="whitespace-pre-wrap break-words">{message.content}</div>
                     </div>
                     <div className="flex items-center gap-1.5 mt-1.5 px-1">
-                      <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
-                        {mounted ? formatTime(message.timestamp) : "--:-- --"}
-                      </span>
+                      {mounted && (
+                        <span className="text-[10px] text-muted-foreground">
+                          {formatTime(message.timestamp)}
+                        </span>
+                      )}
                       {message.metadata && (
                         <>
                           <span className="text-[10px] text-muted-foreground">•</span>
