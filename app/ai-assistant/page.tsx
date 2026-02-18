@@ -48,14 +48,25 @@ const systemCapabilities = [
   { icon: Network, title: "Low Latency", description: "~120ms response" },
 ]
 
+const STATIC_INIT_TIME = new Date("2026-02-18T12:00:00Z")
+
+function formatTime(date: Date) {
+  const h = date.getHours()
+  const m = date.getMinutes()
+  const ampm = h >= 12 ? "PM" : "AM"
+  const h12 = h % 12 || 12
+  return `${h12.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")} ${ampm}`
+}
+
 function AIAssistantContent() {
+  const [mounted, setMounted] = useState(false)
   const [messages, setMessages] = useState<AIMessage[]>([
     {
       id: "welcome",
       role: "assistant",
       content:
         "Hello! I'm the DNA-Lang Quantum AI Assistant. I can help you with code generation, debugging, optimization, and understanding biological computing paradigms. How can I assist you today?",
-      timestamp: new Date(),
+      timestamp: STATIC_INIT_TIME,
       metadata: { model: "quantum-gpt-4", tokens: 42, latency: 124 },
     },
   ])
@@ -66,15 +77,25 @@ function AIAssistantContent() {
     latency: 142,
     endpoint: "qai.dna-lang.io",
     protocol: "QEC-TLS 1.3",
-    lastHeartbeat: new Date(),
+    lastHeartbeat: STATIC_INIT_TIME,
   })
   const [usage, setUsage] = useState<AIUsageMetrics>({
     tokensUsed: 847,
     tokensLimit: 10000,
     queriesUsed: 3,
     queriesLimit: 100,
-    sessionStart: new Date(),
+    sessionStart: STATIC_INIT_TIME,
   })
+
+  useEffect(() => {
+    setMounted(true)
+    const now = new Date()
+    setMessages((prev) =>
+      prev.map((m) => (m.id === "welcome" ? { ...m, timestamp: now } : m))
+    )
+    setConnectionStatus((prev) => ({ ...prev, lastHeartbeat: now }))
+    setUsage((prev) => ({ ...prev, sessionStart: now }))
+  }, [])
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [showCapabilities, setShowCapabilities] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -251,8 +272,8 @@ function AIAssistantContent() {
                       <div className="whitespace-pre-wrap break-words">{message.content}</div>
                     </div>
                     <div className="flex items-center gap-1.5 mt-1.5 px-1">
-                      <span className="text-[10px] text-muted-foreground">
-                        {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
+                        {mounted ? formatTime(message.timestamp) : "--:-- --"}
                       </span>
                       {message.metadata && (
                         <>
