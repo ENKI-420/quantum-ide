@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, Suspense, useCallback } from "react"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { GlassCard } from "@/components/ui/glass-card"
@@ -48,8 +49,6 @@ const systemCapabilities = [
   { icon: Network, title: "Low Latency", description: "~120ms response" },
 ]
 
-const STATIC_INIT_TIME = new Date("2026-02-18T12:00:00Z")
-
 function formatTime(date: Date) {
   const h = date.getHours()
   const m = date.getMinutes()
@@ -59,14 +58,13 @@ function formatTime(date: Date) {
 }
 
 function AIAssistantContent() {
-  const [mounted, setMounted] = useState(false)
   const [messages, setMessages] = useState<AIMessage[]>([
     {
       id: "welcome",
       role: "assistant",
       content:
         "Hello! I'm the DNA-Lang Quantum AI Assistant. I can help you with code generation, debugging, optimization, and understanding biological computing paradigms. How can I assist you today?",
-      timestamp: STATIC_INIT_TIME,
+      timestamp: new Date(),
       metadata: { model: "quantum-gpt-4", tokens: 42, latency: 124 },
     },
   ])
@@ -77,25 +75,15 @@ function AIAssistantContent() {
     latency: 142,
     endpoint: "qai.dna-lang.io",
     protocol: "QEC-TLS 1.3",
-    lastHeartbeat: STATIC_INIT_TIME,
+    lastHeartbeat: new Date(),
   })
   const [usage, setUsage] = useState<AIUsageMetrics>({
     tokensUsed: 847,
     tokensLimit: 10000,
     queriesUsed: 3,
     queriesLimit: 100,
-    sessionStart: STATIC_INIT_TIME,
+    sessionStart: new Date(),
   })
-
-  useEffect(() => {
-    setMounted(true)
-    const now = new Date()
-    setMessages((prev) =>
-      prev.map((m) => (m.id === "welcome" ? { ...m, timestamp: now } : m))
-    )
-    setConnectionStatus((prev) => ({ ...prev, lastHeartbeat: now }))
-    setUsage((prev) => ({ ...prev, sessionStart: now }))
-  }, [])
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [showCapabilities, setShowCapabilities] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -272,11 +260,9 @@ function AIAssistantContent() {
                       <div className="whitespace-pre-wrap break-words">{message.content}</div>
                     </div>
                     <div className="flex items-center gap-1.5 mt-1.5 px-1">
-                      {mounted && (
-                        <span className="text-[10px] text-muted-foreground">
-                          {formatTime(message.timestamp)}
-                        </span>
-                      )}
+                      <span className="text-[10px] text-muted-foreground">
+                        {formatTime(message.timestamp)}
+                      </span>
                       {message.metadata && (
                         <>
                           <span className="text-[10px] text-muted-foreground">•</span>
@@ -463,10 +449,15 @@ function AIAssistantContent() {
   )
 }
 
+const DynamicAIAssistantContent = dynamic(
+  () => Promise.resolve(AIAssistantContent),
+  { ssr: false }
+)
+
 export default function AIAssistantPage() {
   return (
     <Suspense fallback={null}>
-      <AIAssistantContent />
+      <DynamicAIAssistantContent />
     </Suspense>
   )
 }
