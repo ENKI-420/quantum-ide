@@ -49,6 +49,11 @@ export function IDESidebar() {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Close mobile sidebar on route change
   useEffect(() => {
@@ -158,7 +163,9 @@ export function IDESidebar() {
     </TooltipProvider>
   )
 
-  const MobileSidebarTrigger = () => (
+  const MobileSidebarTrigger = () => {
+    if (!mounted) return null
+    return (
     <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
       <SheetTrigger asChild>
         <Button
@@ -213,7 +220,7 @@ export function IDESidebar() {
         </ScrollArea>
       </SheetContent>
     </Sheet>
-  )
+  )}
 
   return (
     <>
