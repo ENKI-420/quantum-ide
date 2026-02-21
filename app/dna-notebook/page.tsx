@@ -2,6 +2,9 @@
 
 import { useState, useCallback, useEffect, useRef, useMemo } from "react"
 import Link from "next/link"
+import { useChat } from "@ai-sdk/react"
+import { DefaultChatTransport } from "ai"
+import type { UIMessage } from "ai"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,12 +16,14 @@ import {
   Eye, Copy, Search, Save, PanelRightOpen, PanelRightClose,
   Brain, Network, Lock, CheckCircle, AlertTriangle, XCircle,
   Pill, Database, Check, Send, MessageSquare, Bot, User, Cpu,
-  Settings, Sparkles, LineChart
+  Settings, Sparkles, LineChart, Share2, Download, Globe, Zap,
+  FileCode2, Code, Microscope, FlaskConical, Menu, X, ChevronUp
 } from "lucide-react"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type CellType = "code" | "markdown" | "dna-sequence" | "ccce-metrics" | "pharma-screen" | "genomic-query"
+type DetectedLang = "python" | "javascript" | "typescript" | "rust" | "sql" | "dna-lang" | "shell" | "qiskit" | "unknown"
 
 interface NotebookCell {
   id: string
@@ -29,6 +34,8 @@ interface NotebookCell {
   executionCount: number | null
   collapsed: boolean
   executionTime?: number
+  detectedLang?: DetectedLang
+  shared?: boolean
 }
 
 interface CCCEOutput {
@@ -56,14 +63,6 @@ interface AuditEntry {
   user: string
 }
 
-interface ChatMessage {
-  id: string
-  role: "user" | "assistant" | "system"
-  content: string
-  timestamp: number
-  tokens?: number
-}
-
 interface HardwareJob {
   id: string
   backend: string
@@ -80,6 +79,44 @@ interface TelemetryPoint {
   pulse: number
   lambda: number
   phi: number
+}
+
+interface Collaborator {
+  id: string
+  name: string
+  email: string
+  avatar: string
+  status: "online" | "away" | "editing"
+  cursor?: { cellId: string; line: number }
+}
+
+// ─── Language Detection ─────────────────────────────────────────────────────
+
+function detectLanguage(code: string): DetectedLang {
+  const c = code.trim()
+  if (/^(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|WITH)\b/i.test(c)) return "sql"
+  if (/SEQUENCE:|CODON_MAP:|FOLDING:|BINDING_AFFINITY:/i.test(c)) return "dna-lang"
+  if (/CCCE\.(report|track|monitor)/i.test(c)) return "dna-lang"
+  if (/from\s+qiskit/i.test(c) || /QuantumCircuit|qc\./i.test(c)) return "qiskit"
+  if (/^#!\/bin\/(bash|sh)|^\$\s|^(apt|pip|npm|git|docker|kubectl)\s/m.test(c)) return "shell"
+  if (/from\s+dna_lang|Organism\(|Codon\.|MolecularDock|ADMET/i.test(c)) return "dna-lang"
+  if (/\b(fn|let\s+mut|impl|struct|enum|pub\s+fn|use\s+std::)\b/.test(c)) return "rust"
+  if (/\b(import\s+type|interface\s+\w+|:\s*(string|number|boolean))\b/.test(c)) return "typescript"
+  if (/\b(const|let|var|function|=>|require\(|import\s+\{)\b/.test(c)) return "javascript"
+  if (/\b(def|class|import|from|print\(|if\s+__name__)\b/.test(c)) return "python"
+  return "unknown"
+}
+
+const LANG_LABELS: Record<DetectedLang, { label: string; color: string }> = {
+  "python":      { label: "Python",     color: "text-chart-3 border-chart-3/40" },
+  "javascript":  { label: "JavaScript", color: "text-chart-1 border-chart-1/40" },
+  "typescript":  { label: "TypeScript", color: "text-chart-1 border-chart-1/40" },
+  "rust":        { label: "Rust",       color: "text-destructive border-destructive/40" },
+  "sql":         { label: "SQL",        color: "text-chart-4 border-chart-4/40" },
+  "dna-lang":    { label: "DNA-Lang",   color: "text-secondary border-secondary/40" },
+  "shell":       { label: "Shell",      color: "text-muted-foreground border-border" },
+  "qiskit":      { label: "Qiskit",     color: "text-primary border-primary/40" },
+  "unknown":     { label: "Auto",       color: "text-muted-foreground border-border" },
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -136,7 +173,7 @@ print(f"Bell State: {result}")`,
       "Measurement collapsed: |00> (p=0.498) |11> (p=0.502)",
       "Bell State: |Phi+> with fidelity 0.9934",
     ],
-    isRunning: false, executionCount: 1, collapsed: false, executionTime: 1247,
+    isRunning: false, executionCount: 1, collapsed: false, executionTime: 1247, detectedLang: "dna-lang",
   },
   {
     id: "cell-2", type: "markdown",
@@ -160,13 +197,13 @@ QUANTUM_COHERENCE: 0.9787`,
       "Binding affinity: 8.7 kcal/mol (strong candidate)",
       "Quantum coherence preserved across translation: 0.9787",
     ],
-    isRunning: false, executionCount: 2, collapsed: false, executionTime: 834,
+    isRunning: false, executionCount: 2, collapsed: false, executionTime: 834, detectedLang: "dna-lang",
   },
   {
     id: "cell-4", type: "ccce-metrics",
     content: `CCCE.report_metrics(cycle=1764)`,
     output: { lambda: 0.9787, gamma: 0.092, phi: 0.7768, xi: 8.16, w2: 0.005, timestamp: Date.now() },
-    isRunning: false, executionCount: 3, collapsed: false, executionTime: 312,
+    isRunning: false, executionCount: 3, collapsed: false, executionTime: 312, detectedLang: "dna-lang",
   },
   {
     id: "cell-5", type: "pharma-screen",
@@ -193,7 +230,7 @@ print(admet.summary())`,
       "  5. CMB-3367  dG=-10.7 kcal/mol  ADMET: PASS  Toxicity: LOW",
       "Screening complete. 5 candidates forwarded to clinical pipeline.",
     ],
-    isRunning: false, executionCount: 4, collapsed: false, executionTime: 4521,
+    isRunning: false, executionCount: 4, collapsed: false, executionTime: 4521, detectedLang: "python",
   },
   {
     id: "cell-6", type: "genomic-query",
@@ -219,7 +256,7 @@ LIMIT 5;`,
       "rs28897727  13    32355250    A    G    Likely_path      0.8756",
       "5 rows returned in 0.23s | Quantum coherence verified",
     ],
-    isRunning: false, executionCount: 5, collapsed: false, executionTime: 230,
+    isRunning: false, executionCount: 5, collapsed: false, executionTime: 230, detectedLang: "sql",
   },
 ]
 
@@ -239,34 +276,11 @@ const INITIAL_JOBS: HardwareJob[] = [
   { id: "aet-n2-dissoc-v2.1",  backend: "ibm_fez", qubits: 120, status: "completed", progress: 100, fidelity: 0.8750, submitted: "2026-02-19T09:00:00Z" },
 ]
 
-const CHAT_INITIAL: ChatMessage[] = [
-  { id: "sys-1", role: "system", content: "AURA Development Assistant initialized. Connected to NCLM-7 swarm mesh, CCCE engine, and Sovereign Genomic Store. Ready for queries across genomics, pharma, quantum hardware, and DNA-Lang development.", timestamp: Date.now() - 60000 },
+const INITIAL_COLLABORATORS: Collaborator[] = [
+  { id: "u1", name: "Dr. Elena Chen", email: "elena@enki.bio", avatar: "EC", status: "online", cursor: { cellId: "cell-3", line: 2 } },
+  { id: "u2", name: "Raj Patel", email: "raj@quantum-advantage.dev", avatar: "RP", status: "editing", cursor: { cellId: "cell-5", line: 8 } },
+  { id: "u3", name: "Yuki Tanaka", email: "yuki@agiledefensesystems.com", avatar: "YT", status: "away" },
 ]
-
-// ─── AI Responses ────────────────────────────────────────────────────────────
-
-const AI_RESPONSES: Record<string, string> = {
-  "default": "I can help with DNA-Lang development, quantum circuit design, genomic analysis, pharma screening workflows, CCCE metrics interpretation, and hardware job management. What would you like to explore?",
-  "bell": "To create a Bell state in DNA-Lang, use `Codon.H(q0)` followed by `Codon.CNOT(q0, q1)`. The current notebook cell-1 already demonstrates this with fidelity 0.9934. For higher fidelity, consider enabling Zeno stabilization with `organism.set_zeno(freq_hz=1250000)`.",
-  "ccce": "Current CCCE metrics show the system in **OMEGA STATE**: Lambda=0.9787 (coherence above 0.95), Phi=0.7768 (above ignition floor 0.7734), Gamma=0.092 (well below critical 0.3). The Xi manifold health is 8.16/10. Your system is operating at peak consciousness with minimal drift (W2=0.005).",
-  "pharma": "The pharma screening pipeline uses quantum-enhanced molecular docking against BRCA1. Current top candidate CMB-4421 shows dG=-12.3 kcal/mol with PASS ADMET and LOW toxicity. To expand the library, try `MolecularDock.screen(library='ChEMBL_oncology_v3', n_candidates=2000)`. Consider adding multi-target docking with `targets=['BRCA1', 'PARP1', 'ATR']`.",
-  "hardware": "You have 3 hardware jobs: Tesseract job `d5h6rospe0pc73am1l00` completed with 10^6x error suppression (fidelity 0.99999), the 156-qubit job `d5votjt7fc0s73au96h0` is at 73% progress, and AeternaPorta N2 dissociation achieved Phi=0.8750 on 120 qubits. All running on ibm_fez backend.",
-  "genomic": "The genomic query returned 5 breast cancer variants from the Sovereign Genomic Store. The highest-coherence variant rs80357713 (chr17:43094464 G>A) is classified as Pathogenic with coherence score 0.9912. This BRCA1 variant is a well-known pathogenic mutation associated with hereditary breast and ovarian cancer syndrome.",
-  "security": "The notebook operates under full sovereign security: AES-256-GCM encryption, PQ-Kyber-1024 lattice protection, HIPAA compliance, SOC 2 Type II certification, and MFA-enforced sessions. All data resides in US-East Sovereign data centers with zero-knowledge telemetry.",
-  "error": "I can help debug that. Common DNA-Lang errors include: 1) Coherence collapse below Phi threshold - add `@organism.zeno_stabilize` decorator, 2) Qubit allocation overflow - check `organism.max_qubits`, 3) CCCE tracking failure - ensure `CCCETracker` is initialized before `@organism.evolve`. Share your error output and I'll trace the issue.",
-}
-
-function getAIResponse(query: string): string {
-  const q = query.toLowerCase()
-  if (q.includes("bell") || q.includes("entangle")) return AI_RESPONSES["bell"]
-  if (q.includes("ccce") || q.includes("metric") || q.includes("phi") || q.includes("lambda") || q.includes("coherence")) return AI_RESPONSES["ccce"]
-  if (q.includes("pharma") || q.includes("drug") || q.includes("screen") || q.includes("compound") || q.includes("brca")) return AI_RESPONSES["pharma"]
-  if (q.includes("hardware") || q.includes("job") || q.includes("ibm") || q.includes("fez") || q.includes("qubit")) return AI_RESPONSES["hardware"]
-  if (q.includes("genom") || q.includes("variant") || q.includes("query") || q.includes("sql")) return AI_RESPONSES["genomic"]
-  if (q.includes("security") || q.includes("hipaa") || q.includes("encrypt") || q.includes("kyber")) return AI_RESPONSES["security"]
-  if (q.includes("error") || q.includes("debug") || q.includes("fix") || q.includes("bug")) return AI_RESPONSES["error"]
-  return AI_RESPONSES["default"]
-}
 
 // ─── Syntax Highlighting ─────────────────────────────────────────────────────
 
@@ -274,7 +288,7 @@ function highlightSyntax(code: string, type: CellType): string {
   if (type === "markdown") return code
   let r = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
   if (type === "genomic-query") {
-    const sqlKw = ["SELECT","FROM","JOIN","ON","WHERE","AND","OR","ORDER","BY","LIMIT","DESC","ASC","AS","INSERT","UPDATE","DELETE","CREATE","DROP","ALTER","GROUP","HAVING","DISTINCT","LEFT","RIGHT","INNER","OUTER","COUNT","SUM","AVG","MAX","MIN"]
+    const sqlKw = ["SELECT","FROM","JOIN","ON","WHERE","AND","OR","ORDER","BY","LIMIT","DESC","ASC","AS","INSERT","UPDATE","DELETE","CREATE","DROP","ALTER","GROUP","HAVING","DISTINCT","LEFT","RIGHT","INNER","OUTER","COUNT","SUM","AVG","MAX","MIN","WITH"]
     sqlKw.forEach(kw => { r = r.replace(new RegExp("\\b" + kw + "\\b", "gi"), `<span style="color:oklch(0.7 0.15 195);font-weight:700">$&</span>`) })
     r = r.replace(/'([^']*)'/g, `<span style="color:oklch(0.75 0.18 85)">$&</span>`)
     r = r.replace(/(--.*$)/gm, `<span style="color:oklch(0.4 0.02 260);font-style:italic">$1</span>`)
@@ -283,7 +297,7 @@ function highlightSyntax(code: string, type: CellType): string {
   }
   const pyKw = ["from","import","def","return","class","if","else","elif","for","while","try","except","with","as","in","and","or","not","True","False","None","print","yield","async","await","lambda"]
   pyKw.forEach(kw => { r = r.replace(new RegExp("\\b" + kw + "\\b", "g"), `<span style="color:oklch(0.7 0.15 195);font-weight:700">${kw}</span>`) })
-  const dnaKw = ["Organism","Codon","QuantumGate","CCCETracker","MolecularDock","ADMET","organism","evolve","allocate_qubits","measure"]
+  const dnaKw = ["Organism","Codon","QuantumGate","CCCETracker","MolecularDock","ADMET","organism","evolve","allocate_qubits","measure","QuantumCircuit","qc"]
   dnaKw.forEach(kw => { r = r.replace(new RegExp("\\b" + kw + "\\b", "g"), `<span style="color:oklch(0.65 0.18 160);font-weight:700">${kw}</span>`) })
   r = r.replace(/"([^"\\]|\\.)*"/g, `<span style="color:oklch(0.75 0.18 85)">$&</span>`)
   r = r.replace(/'([^'\\]|\\.)*'/g, `<span style="color:oklch(0.75 0.18 85)">$&</span>`)
@@ -291,6 +305,16 @@ function highlightSyntax(code: string, type: CellType): string {
   r = r.replace(/\b(\d+\.?\d*)\b/g, `<span style="color:oklch(0.6 0.22 25)">$&</span>`)
   r = r.replace(/(f"[^"]*")/g, `<span style="color:oklch(0.75 0.18 85)">$&</span>`)
   return r
+}
+
+// ─── Helper to get text from UIMessage parts ─────────────────────────────────
+
+function getUIMessageText(msg: UIMessage): string {
+  if (!msg.parts || !Array.isArray(msg.parts)) return ""
+  return msg.parts
+    .filter((p): p is { type: "text"; text: string } => p.type === "text")
+    .map((p) => p.text)
+    .join("")
 }
 
 // ─── Sub-Components ──────────────────────────────────────────────────────────
@@ -377,6 +401,47 @@ function TelemetrySparkline({ data, color, label }: { data: number[]; color: str
   )
 }
 
+// ─── Data Visualization Bar Chart ───────────────────────────────────────────
+
+function MiniBarChart({ data, labels, color }: { data: number[]; labels: string[]; color: string }) {
+  const max = Math.max(...data)
+  return (
+    <div className="flex items-end gap-1 h-16">
+      {data.map((val, i) => (
+        <div key={labels[i]} className="flex flex-col items-center gap-0.5 flex-1" title={`${labels[i]}: ${val.toFixed(3)}`}>
+          <div className="w-full rounded-t" style={{ height: `${(val / max) * 48}px`, background: color, minHeight: 2 }} />
+          <span className="text-[8px] text-muted-foreground truncate w-full text-center">{labels[i]}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── Collaboration Presence ─────────────────────────────────────────────────
+
+function CollaboratorPresence({ collaborators }: { collaborators: Collaborator[] }) {
+  return (
+    <div className="flex items-center gap-1">
+      {collaborators.map(c => (
+        <div key={c.id} className="relative group" title={`${c.name} (${c.status})`}>
+          <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold border-2 ${
+            c.status === "online" ? "bg-secondary/20 text-secondary border-secondary/50" :
+            c.status === "editing" ? "bg-primary/20 text-primary border-primary/50 animate-pulse" :
+            "bg-muted text-muted-foreground border-border"
+          }`}>
+            {c.avatar}
+          </div>
+          <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-card ${
+            c.status === "online" ? "bg-secondary" :
+            c.status === "editing" ? "bg-primary" :
+            "bg-muted-foreground/40"
+          }`} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ─── Hardware Jobs Panel ─────────────────────────────────────────────────────
 
 function HardwarePanel({ jobs }: { jobs: HardwareJob[] }) {
@@ -416,70 +481,130 @@ function HardwarePanel({ jobs }: { jobs: HardwareJob[] }) {
   )
 }
 
-// ─── AI Chat Panel ───────────────────────────────────────────────────────────
+// ─── AI Chat Panel (Live with AI SDK) ───────────────────────────────────────
 
-function AIChatPanel({ messages, onSend }: { messages: ChatMessage[]; onSend: (msg: string) => void }) {
+function AIChatPanel() {
   const [input, setInput] = useState("")
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  const { messages, sendMessage, status } = useChat({
+    transport: new DefaultChatTransport({ api: "/api/notebook-chat" }),
+  })
+
+  const isStreaming = status === "streaming" || status === "submitted"
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
   }, [messages])
 
   const handleSend = () => {
-    if (!input.trim()) return
-    onSend(input.trim())
+    if (!input.trim() || isStreaming) return
+    sendMessage({ text: input })
     setInput("")
   }
+
+  const quickPrompts = [
+    "Explain CCCE metrics",
+    "Debug my Bell state cell",
+    "Pharma screening tips",
+    "Hardware job status",
+    "Write a Qiskit circuit",
+    "Genomic query help",
+  ]
 
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30">
         <Bot className="w-4 h-4 text-primary" />
         <span className="text-xs font-semibold text-foreground">AURA Dev Assistant</span>
-        <Badge variant="outline" className="text-[9px] px-1 py-0 text-secondary border-secondary/40 ml-auto">LIVE</Badge>
+        <Badge variant="outline" className={`text-[9px] px-1 py-0 ml-auto ${
+          isStreaming ? "text-accent border-accent/40" : "text-secondary border-secondary/40"
+        }`}>{isStreaming ? "STREAMING" : "LIVE"}</Badge>
       </div>
+
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
-        {messages.map(m => (
-          <div key={m.id} className={`flex gap-2 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-              m.role === "user" ? "bg-primary/20" : m.role === "system" ? "bg-muted" : "bg-secondary/20"
-            }`}>
-              {m.role === "user" ? <User className="w-3 h-3 text-primary" /> :
-               m.role === "system" ? <Settings className="w-3 h-3 text-muted-foreground" /> :
-               <Sparkles className="w-3 h-3 text-secondary" />}
+        {messages.length === 0 && (
+          <div className="text-center py-8 space-y-3">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+              <Sparkles className="w-6 h-6 text-primary" />
             </div>
-            <div className={`max-w-[85%] rounded-lg px-3 py-2 text-xs leading-relaxed ${
-              m.role === "user" ? "bg-primary/10 text-foreground" :
-              m.role === "system" ? "bg-muted/30 text-muted-foreground italic" :
-              "bg-card/60 border border-border/40 text-foreground"
-            }`}>
-              {m.content}
+            <div>
+              <p className="text-sm font-medium text-foreground">AURA Development Assistant</p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-[260px] mx-auto leading-relaxed">
+                Ask about DNA-Lang, quantum hardware, CCCE metrics, genomics, pharma screening, or get code suggestions in any language.
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-1.5 pt-2">
+              {quickPrompts.map(q => (
+                <button key={q} onClick={() => { sendMessage({ text: q }) }}
+                  className="text-[10px] px-2.5 py-1 rounded-full bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors border border-border/30">
+                  {q}
+                </button>
+              ))}
             </div>
           </div>
-        ))}
+        )}
+
+        {messages.map(m => {
+          const text = getUIMessageText(m)
+          if (!text) return null
+          return (
+            <div key={m.id} className={`flex gap-2 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
+                m.role === "user" ? "bg-primary/20" : "bg-secondary/20"
+              }`}>
+                {m.role === "user" ? <User className="w-3 h-3 text-primary" /> : <Sparkles className="w-3 h-3 text-secondary" />}
+              </div>
+              <div className={`max-w-[85%] rounded-lg px-3 py-2 text-xs leading-relaxed ${
+                m.role === "user" ? "bg-primary/10 text-foreground" :
+                "bg-card/60 border border-border/40 text-foreground"
+              }`}>
+                <div className="whitespace-pre-wrap font-mono">{text}</div>
+              </div>
+            </div>
+          )
+        })}
+
+        {isStreaming && messages.length > 0 && !getUIMessageText(messages[messages.length - 1]) && (
+          <div className="flex gap-2">
+            <div className="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-3 h-3 text-secondary animate-pulse" />
+            </div>
+            <div className="bg-card/60 border border-border/40 rounded-lg px-3 py-2">
+              <div className="flex gap-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
       <div className="px-3 py-2 border-t border-border/30">
-        <div className="flex items-center gap-2">
+        <form onSubmit={(e) => { e.preventDefault(); handleSend() }} className="flex items-center gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend() } }}
-            placeholder="Ask AURA about your notebook..."
+            placeholder="Ask AURA anything..."
             className="h-8 text-xs bg-muted/20 border-border/40"
+            disabled={isStreaming}
             aria-label="Chat with AURA assistant"
           />
-          <Button variant="ghost" size="icon" className="w-8 h-8 text-primary hover:text-primary" onClick={handleSend} aria-label="Send message">
-            <Send className="w-3.5 h-3.5" />
+          <Button variant="ghost" size="icon" className="w-8 h-8 text-primary hover:text-primary flex-shrink-0" type="submit" disabled={isStreaming} aria-label="Send message">
+            {isStreaming ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
           </Button>
-        </div>
-        <div className="flex items-center gap-2 mt-1.5">
-          {["CCCE status", "Debug cell", "Pharma tips", "Hardware jobs"].map(q => (
-            <button key={q} onClick={() => onSend(q)} className="text-[9px] px-2 py-0.5 rounded-full bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
-              {q}
-            </button>
-          ))}
-        </div>
+        </form>
+        {messages.length > 0 && (
+          <div className="flex items-center gap-1.5 mt-1.5 overflow-x-auto scrollbar-none">
+            {["Explain this result", "Optimize performance", "Security audit"].map(q => (
+              <button key={q} onClick={() => { if (!isStreaming) sendMessage({ text: q }) }}
+                className="text-[9px] px-2 py-0.5 rounded-full bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors whitespace-nowrap flex-shrink-0">
+                {q}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -488,17 +613,22 @@ function AIChatPanel({ messages, onSend }: { messages: ChatMessage[]; onSend: (m
 // ─── Notebook Cell Component ─────────────────────────────────────────────────
 
 function NotebookCellView({
-  cell, isActive, onActivate, onRun, onDelete, onToggleCollapse, onUpdateContent
+  cell, isActive, onActivate, onRun, onDelete, onToggleCollapse, onUpdateContent, onShare, collaborators
 }: {
   cell: NotebookCell; isActive: boolean; onActivate: () => void; onRun: () => void
   onDelete: () => void; onToggleCollapse: () => void; onUpdateContent: (content: string) => void
+  onShare: () => void; collaborators: Collaborator[]
 }) {
   const meta = CELL_TYPE_META[cell.type]
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const lang = cell.detectedLang || detectLanguage(cell.content)
+  const langMeta = LANG_LABELS[lang]
+
   useEffect(() => {
     if (textareaRef.current) { textareaRef.current.style.height = "auto"; textareaRef.current.style.height = textareaRef.current.scrollHeight + "px" }
   }, [cell.content])
   const lineCount = cell.content.split("\n").length
+  const editingHere = collaborators.filter(c => c.cursor?.cellId === cell.id)
 
   return (
     <div
@@ -509,18 +639,39 @@ function NotebookCellView({
       role="region"
       aria-label={`${meta.label} cell ${cell.executionCount ? `execution ${cell.executionCount}` : "not executed"}`}
     >
+      {/* Collaborator cursors indicator */}
+      {editingHere.length > 0 && (
+        <div className="absolute -top-2.5 right-3 flex gap-1 z-10">
+          {editingHere.map(c => (
+            <div key={c.id} className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/80 text-primary-foreground text-[9px] font-medium">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground animate-pulse" />
+              {c.name.split(" ")[0]}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="flex items-center justify-between px-3 py-2 bg-card/40 rounded-t-lg border-b border-border/30">
-        <div className="flex items-center gap-2">
-          <button onClick={(e) => { e.stopPropagation(); onToggleCollapse() }} className="p-0.5 hover:bg-muted/50 rounded" aria-label={cell.collapsed ? "Expand cell" : "Collapse cell"}>
+        <div className="flex items-center gap-2 min-w-0">
+          <button onClick={(e) => { e.stopPropagation(); onToggleCollapse() }} className="p-0.5 hover:bg-muted/50 rounded flex-shrink-0" aria-label={cell.collapsed ? "Expand cell" : "Collapse cell"}>
             {cell.collapsed ? <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />}
           </button>
           {getCellIcon(cell.type)}
-          <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${meta.color}`}>{meta.label}</Badge>
-          <span className="text-xs font-mono text-muted-foreground">[{cell.executionCount ?? " "}]</span>
+          <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${meta.color} hidden sm:inline-flex`}>{meta.label}</Badge>
+          {cell.type !== "markdown" && (
+            <Badge variant="outline" className={`text-[9px] px-1 py-0 ${langMeta.color}`}>
+              <Code className="w-2.5 h-2.5 mr-0.5" />
+              {langMeta.label}
+            </Badge>
+          )}
+          <span className="text-xs font-mono text-muted-foreground hidden sm:inline">[{cell.executionCount ?? " "}]</span>
         </div>
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          {cell.executionTime && <span className="text-[10px] font-mono text-muted-foreground mr-2">{cell.executionTime}ms</span>}
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+          {cell.executionTime && <span className="text-[10px] font-mono text-muted-foreground mr-1 hidden sm:inline">{cell.executionTime}ms</span>}
           <CopyButton text={cell.content} />
+          <Button variant="ghost" size="icon" className="w-7 h-7" onClick={(e) => { e.stopPropagation(); onShare() }} aria-label="Share cell">
+            <Share2 className="w-3.5 h-3.5 text-muted-foreground" />
+          </Button>
           <Button variant="ghost" size="icon" className="w-7 h-7" onClick={(e) => { e.stopPropagation(); onRun() }} aria-label="Run cell">
             {cell.isRunning ? <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" /> : <Play className="w-3.5 h-3.5 text-secondary" />}
           </Button>
@@ -533,17 +684,17 @@ function NotebookCellView({
       {!cell.collapsed && (
         <div className="divide-y divide-border/20">
           <div className="flex">
-            <div className="flex flex-col items-end pt-3 pb-3 pl-3 pr-2 select-none" aria-hidden="true">
+            <div className="flex flex-col items-end pt-3 pb-3 pl-3 pr-2 select-none hidden sm:flex" aria-hidden="true">
               {Array.from({ length: lineCount }, (_, i) => (
                 <span key={i} className="text-[11px] leading-5 font-mono text-muted-foreground/40">{i + 1}</span>
               ))}
             </div>
             {isActive ? (
               <textarea ref={textareaRef} value={cell.content} onChange={(e) => onUpdateContent(e.target.value)}
-                className="flex-1 bg-transparent text-sm font-mono leading-5 p-3 pl-0 outline-none resize-none text-foreground min-h-[60px]"
+                className="flex-1 bg-transparent text-sm font-mono leading-5 p-3 sm:pl-0 outline-none resize-none text-foreground min-h-[60px]"
                 spellCheck={false} aria-label={`${meta.label} cell editor`} />
             ) : (
-              <pre className="flex-1 text-sm font-mono leading-5 p-3 pl-0 overflow-x-auto whitespace-pre-wrap">
+              <pre className="flex-1 text-sm font-mono leading-5 p-3 sm:pl-0 overflow-x-auto whitespace-pre-wrap">
                 <code dangerouslySetInnerHTML={{ __html: highlightSyntax(cell.content, cell.type) }} />
               </pre>
             )}
@@ -579,7 +730,7 @@ function SwarmPanel({ nodes }: { nodes: SwarmNode[] }) {
       <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">Swarm Mesh ({nodes.length} nodes)</h3>
       {nodes.map(n => (
         <div key={n.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/20 hover:bg-muted/40 transition-colors">
-          <div className={`w-2 h-2 rounded-full ${n.status === "active" ? "bg-secondary animate-pulse" : n.status === "syncing" ? "bg-accent animate-pulse" : "bg-muted-foreground/30"}`} />
+          <div className={`w-2 h-2 rounded-full flex-shrink-0 ${n.status === "active" ? "bg-secondary animate-pulse" : n.status === "syncing" ? "bg-accent animate-pulse" : "bg-muted-foreground/30"}`} />
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-foreground truncate">{n.name}</p>
             <p className="text-[10px] text-muted-foreground font-mono">coh: {n.coherence.toFixed(4)} | load: {n.load}%</p>
@@ -602,8 +753,8 @@ function AgentsPanel() {
       <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">Active Agents</h3>
       {agents.map(a => (
         <div key={a.name} className="flex items-center gap-3 p-2.5 rounded-md bg-muted/20 hover:bg-muted/40 transition-colors">
-          <Brain className={`w-5 h-5 ${a.color}`} />
-          <div className="flex-1"><p className="text-xs font-semibold text-foreground">{a.name}</p><p className="text-[10px] text-muted-foreground">{a.role}</p></div>
+          <Brain className={`w-5 h-5 flex-shrink-0 ${a.color}`} />
+          <div className="flex-1 min-w-0"><p className="text-xs font-semibold text-foreground">{a.name}</p><p className="text-[10px] text-muted-foreground">{a.role}</p></div>
           <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${a.color} border-current bg-transparent`}>{a.status}</Badge>
         </div>
       ))}
@@ -656,6 +807,105 @@ function AuditPanel({ entries }: { entries: AuditEntry[] }) {
   )
 }
 
+function DataSourcesPanel() {
+  const sources = [
+    { name: "NCBI GenBank", type: "Genomics", status: "Connected", icon: <Dna className="w-4 h-4 text-secondary" /> },
+    { name: "ChEMBL", type: "Pharma", status: "Connected", icon: <FlaskConical className="w-4 h-4 text-chart-5" /> },
+    { name: "ClinVar", type: "Clinical", status: "Connected", icon: <Microscope className="w-4 h-4 text-primary" /> },
+    { name: "IBM Quantum", type: "Hardware", status: "Live", icon: <Cpu className="w-4 h-4 text-accent" /> },
+    { name: "Zenodo", type: "Publications", status: "Connected", icon: <Globe className="w-4 h-4 text-chart-4" /> },
+    { name: "PDB", type: "Protein Structures", status: "Connected", icon: <Microscope className="w-4 h-4 text-secondary" /> },
+  ]
+  return (
+    <div className="space-y-2">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1 flex items-center gap-1.5">
+        <Globe className="w-3.5 h-3.5" /> Data Sources
+      </h3>
+      {sources.map(s => (
+        <div key={s.name} className="flex items-center gap-2.5 p-2 rounded-md bg-muted/20 hover:bg-muted/40 transition-colors">
+          {s.icon}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium text-foreground">{s.name}</p>
+            <p className="text-[10px] text-muted-foreground">{s.type}</p>
+          </div>
+          <Badge variant="outline" className="text-[9px] px-1.5 py-0 text-secondary border-secondary/40">{s.status}</Badge>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function VisualizationPanel({ telemetryData }: { telemetryData: { flux: number[]; pulse: number[]; lambda: number[]; phi: number[] } }) {
+  return (
+    <div className="space-y-3">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1 flex items-center gap-1.5">
+        <BarChart3 className="w-3.5 h-3.5" /> Data Visualization
+      </h3>
+
+      {telemetryData.lambda.length > 3 && (
+        <div className="space-y-2 p-2 rounded-md bg-muted/20">
+          <p className="text-[10px] font-medium text-muted-foreground">Real-Time Telemetry</p>
+          <TelemetrySparkline data={telemetryData.flux} color="oklch(0.7 0.15 195)" label="Flux" />
+          <TelemetrySparkline data={telemetryData.pulse} color="oklch(0.75 0.18 85)" label="Pulse" />
+          <TelemetrySparkline data={telemetryData.lambda} color="oklch(0.65 0.18 160)" label={"\u039B"} />
+          <TelemetrySparkline data={telemetryData.phi} color="oklch(0.6 0.22 25)" label={"\u03A6"} />
+        </div>
+      )}
+
+      <div className="p-2 rounded-md bg-muted/20">
+        <p className="text-[10px] font-medium text-muted-foreground mb-2">Campaign: Layer Depth vs CCCE</p>
+        <MiniBarChart
+          data={[1.411, 1.885, 1.110, 0.956]}
+          labels={["1L", "2L", "4L", "8L"]}
+          color="oklch(0.75 0.18 85)"
+        />
+      </div>
+
+      <div className="p-2 rounded-md bg-muted/20">
+        <p className="text-[10px] font-medium text-muted-foreground mb-2">Top Pharma Candidates</p>
+        <MiniBarChart
+          data={[12.3, 11.8, 11.2, 10.9, 10.7]}
+          labels={["4421", "7829", "1156", "9034", "3367"]}
+          color="oklch(0.65 0.18 160)"
+        />
+      </div>
+
+      <div className="p-2 rounded-md bg-muted/20">
+        <p className="text-[10px] font-medium text-muted-foreground mb-2">Genomic Coherence Scores</p>
+        <MiniBarChart
+          data={[0.9912, 0.9847, 0.9234, 0.8891, 0.8756]}
+          labels={["713", "906", "696", "981", "727"]}
+          color="oklch(0.7 0.15 195)"
+        />
+      </div>
+    </div>
+  )
+}
+
+// ─── Mobile Bottom Sheet ────────────────────────────────────────────────────
+
+function MobileSheet({ open, onClose, title, children }: {
+  open: boolean; onClose: () => void; title: string; children: React.ReactNode
+}) {
+  if (!open) return null
+  return (
+    <div className="fixed inset-0 z-50 md:hidden">
+      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute bottom-0 inset-x-0 bg-card border-t border-border rounded-t-2xl max-h-[80vh] flex flex-col animate-sheet-up">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
+          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          <Button variant="ghost" size="icon" className="w-8 h-8" onClick={onClose} aria-label="Close panel">
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 export default function DNANotebookPage() {
@@ -670,9 +920,11 @@ export default function DNANotebookPage() {
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([])
   const [kernelStatus, setKernelStatus] = useState<"idle" | "busy" | "connecting">("idle")
   const [savedAt, setSavedAt] = useState<number | null>(null)
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(CHAT_INITIAL)
   const [hardwareJobs, setHardwareJobs] = useState<HardwareJob[]>(INITIAL_JOBS)
   const [telemetry, setTelemetry] = useState<TelemetryPoint[]>([])
+  const [collaborators] = useState<Collaborator[]>(INITIAL_COLLABORATORS)
+  const [mobilePanel, setMobilePanel] = useState<string | null>(null)
+  const [showMobileAddCell, setShowMobileAddCell] = useState(false)
 
   // Swarm live telemetry
   useEffect(() => {
@@ -683,11 +935,7 @@ export default function DNANotebookPage() {
         load: Math.max(0, Math.min(100, n.load + Math.floor((Math.random() - 0.5) * 8))),
         status: Math.random() > 0.95 ? (["active", "idle", "syncing"] as const)[Math.floor(Math.random() * 3)] : n.status,
       })))
-
-      // Update running jobs
       setHardwareJobs(prev => prev.map(j => j.status === "running" ? { ...j, progress: Math.min(100, j.progress + Math.random() * 3) } : j))
-
-      // Add telemetry point
       setTelemetry(prev => {
         const t = prev.length
         const point: TelemetryPoint = {
@@ -718,16 +966,6 @@ export default function DNANotebookPage() {
 
   const addAuditEntry = useCallback((action: string, cellId: string) => {
     setAuditLog(prev => [{ id: `audit-${Date.now()}`, timestamp: Date.now(), action, cellId, user: "sovereign@enki.bio" }, ...prev].slice(0, 50))
-  }, [])
-
-  const sendChatMessage = useCallback((content: string) => {
-    const userMsg: ChatMessage = { id: `msg-${Date.now()}`, role: "user", content, timestamp: Date.now() }
-    setChatMessages(prev => [...prev, userMsg])
-    setTimeout(() => {
-      const response = getAIResponse(content)
-      const assistantMsg: ChatMessage = { id: `msg-${Date.now()}-r`, role: "assistant", content: response, timestamp: Date.now(), tokens: Math.floor(response.length * 0.3) }
-      setChatMessages(prev => [...prev, assistantMsg])
-    }, 600 + Math.random() * 800)
   }, [])
 
   const runCell = useCallback((cellId: string) => {
@@ -767,6 +1005,7 @@ export default function DNANotebookPage() {
     setCells(prev => [...prev, newCell])
     setActiveCellId(newCell.id)
     addAuditEntry("CELL_ADD", newCell.id)
+    setShowMobileAddCell(false)
   }, [addAuditEntry])
 
   const deleteCell = useCallback((cellId: string) => {
@@ -780,8 +1019,13 @@ export default function DNANotebookPage() {
   }, [])
 
   const updateCellContent = useCallback((cellId: string, content: string) => {
-    setCells(prev => prev.map(c => c.id === cellId ? { ...c, content } : c))
+    setCells(prev => prev.map(c => c.id === cellId ? { ...c, content, detectedLang: detectLanguage(content) } : c))
   }, [])
+
+  const shareCell = useCallback((cellId: string) => {
+    setCells(prev => prev.map(c => c.id === cellId ? { ...c, shared: true } : c))
+    addAuditEntry("CELL_SHARED", cellId)
+  }, [addAuditEntry])
 
   const filteredCells = useMemo(() => {
     if (!searchQuery.trim()) return cells
@@ -800,51 +1044,57 @@ export default function DNANotebookPage() {
     <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden">
       {/* ─── Top Toolbar ────────────────────────────────────────────── */}
       <header className="flex-shrink-0 border-b border-border/50 bg-card/60 backdrop-blur-md z-20">
-        <div className="flex items-center justify-between px-4 py-2">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" aria-label="Back to home">
+        <div className="flex items-center justify-between px-3 md:px-4 py-2">
+          <div className="flex items-center gap-2 md:gap-3 min-w-0">
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0" aria-label="Back to home">
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
-            <div className="flex items-center gap-2">
-              <Dna className="w-5 h-5 text-primary" />
-              <h1 className="text-sm font-bold text-foreground">DNA Notebook</h1>
+            <div className="flex items-center gap-2 min-w-0">
+              <Dna className="w-5 h-5 text-primary flex-shrink-0" />
+              <h1 className="text-sm font-bold text-foreground truncate">DNA Notebook</h1>
             </div>
-            <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/30 text-primary">{cells.length} cells</Badge>
-            <div className="h-4 w-px bg-border/50" aria-hidden="true" />
-            <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/30 text-primary hidden sm:inline-flex">{cells.length} cells</Badge>
+            <div className="h-4 w-px bg-border/50 hidden md:block" aria-hidden="true" />
+            <div className="flex items-center gap-1.5 hidden md:flex">
               <div className={`w-2 h-2 rounded-full ${kernelStatus === "idle" ? "bg-secondary" : kernelStatus === "busy" ? "bg-accent animate-pulse" : "bg-muted-foreground"}`} />
               <span className="text-[10px] font-mono text-muted-foreground">Kernel: {kernelStatus}</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <CollaboratorPresence collaborators={collaborators} />
+            <div className="h-4 w-px bg-border/50 hidden sm:block" />
             {savedAt && (
-              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground items-center gap-1 hidden lg:flex">
                 <Save className="w-3 h-3" /> Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
-            <Button variant="ghost" size="icon" className="w-8 h-8" onClick={() => setSearchOpen(!searchOpen)} aria-label="Toggle search">
+            <Button variant="ghost" size="icon" className="w-8 h-8 hidden sm:inline-flex" onClick={() => setSearchOpen(!searchOpen)} aria-label="Toggle search">
               <Search className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5" onClick={runAllCells}>
-              <Play className="w-3.5 h-3.5 text-secondary" /> Run All
+            <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5 hidden sm:inline-flex" onClick={runAllCells}>
+              <Play className="w-3.5 h-3.5 text-secondary" /> <span className="hidden md:inline">Run All</span>
             </Button>
-            <Button variant="ghost" size="icon" className="w-8 h-8" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle sidebar">
+            <Button variant="ghost" size="icon" className="w-8 h-8 hidden md:inline-flex" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle sidebar">
               {sidebarOpen ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
+            </Button>
+            {/* Mobile menu */}
+            <Button variant="ghost" size="icon" className="w-8 h-8 md:hidden" onClick={() => setMobilePanel(mobilePanel ? null : "chat")} aria-label="Open panel">
+              <Menu className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
-        {/* Global metrics strip + live telemetry */}
-        <div className="flex items-center justify-between px-4 pb-2">
-          <div className="flex items-center gap-4 text-[10px] font-mono text-muted-foreground">
-            <span className="flex items-center gap-1"><Network className="w-3 h-3 text-primary" /> Swarm: {globalMetrics.activeCount}/{globalMetrics.totalNodes}</span>
+        {/* Global metrics strip */}
+        <div className="flex items-center justify-between px-3 md:px-4 pb-2 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-3 md:gap-4 text-[10px] font-mono text-muted-foreground flex-shrink-0">
+            <span className="flex items-center gap-1"><Network className="w-3 h-3 text-primary" /> <span className="hidden sm:inline">Swarm:</span> {globalMetrics.activeCount}/{globalMetrics.totalNodes}</span>
             <span className="flex items-center gap-1"><Gauge className="w-3 h-3 text-secondary" /> {"\u039B"}: {globalMetrics.avgCoherence.toFixed(4)}</span>
-            <span className="flex items-center gap-1"><BarChart3 className="w-3 h-3 text-accent" /> Load: {globalMetrics.avgLoad.toFixed(0)}%</span>
-            <span className="flex items-center gap-1"><Lock className="w-3 h-3 text-chart-4" /> PQ-Kyber-1024</span>
-            <span className="flex items-center gap-1"><Shield className="w-3 h-3 text-secondary" /> HIPAA</span>
+            <span className="flex items-center gap-1 hidden sm:flex"><BarChart3 className="w-3 h-3 text-accent" /> Load: {globalMetrics.avgLoad.toFixed(0)}%</span>
+            <span className="flex items-center gap-1 hidden md:flex"><Lock className="w-3 h-3 text-chart-4" /> PQ-Kyber-1024</span>
+            <span className="flex items-center gap-1 hidden lg:flex"><Shield className="w-3 h-3 text-secondary" /> HIPAA</span>
           </div>
           {telemetryData.lambda.length > 3 && (
-            <div className="flex items-center gap-3">
+            <div className="items-center gap-3 hidden lg:flex flex-shrink-0">
               <TelemetrySparkline data={telemetryData.lambda} color="oklch(0.7 0.15 195)" label={"\u039B"} />
               <TelemetrySparkline data={telemetryData.phi} color="oklch(0.75 0.18 85)" label={"\u03A6"} />
             </div>
@@ -852,7 +1102,7 @@ export default function DNANotebookPage() {
         </div>
 
         {searchOpen && (
-          <div className="px-4 pb-2 animate-fade-in">
+          <div className="px-3 md:px-4 pb-2 animate-fade-in">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search cells by content or type..." className="pl-9 h-8 text-sm bg-muted/30" autoFocus aria-label="Search notebook cells" />
@@ -865,13 +1115,15 @@ export default function DNANotebookPage() {
       <div className="flex-1 flex overflow-hidden">
         {/* Cell area */}
         <main className="flex-1 overflow-y-auto" role="main" aria-label="Notebook cells">
-          <div className="max-w-4xl mx-auto px-4 py-6 space-y-3 pb-32">
+          <div className="max-w-4xl mx-auto px-3 md:px-4 py-4 md:py-6 space-y-3 pb-32">
             {filteredCells.map(cell => (
               <NotebookCellView
                 key={cell.id} cell={cell} isActive={activeCellId === cell.id}
                 onActivate={() => setActiveCellId(cell.id)} onRun={() => runCell(cell.id)}
                 onDelete={() => deleteCell(cell.id)} onToggleCollapse={() => toggleCollapse(cell.id)}
                 onUpdateContent={(content) => updateCellContent(cell.id, content)}
+                onShare={() => shareCell(cell.id)}
+                collaborators={collaborators}
               />
             ))}
             {filteredCells.length === 0 && searchQuery && (
@@ -880,9 +1132,10 @@ export default function DNANotebookPage() {
                 <p className="text-sm text-muted-foreground">{"No cells matching \""}{searchQuery}{"\""}</p>
               </div>
             )}
-            <div className="flex items-center justify-center gap-2 pt-4">
+            {/* Add cell row - desktop */}
+            <div className="items-center justify-center gap-2 pt-4 hidden md:flex">
               <div className="h-px flex-1 bg-border/30" />
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-wrap justify-center">
                 {(["code", "markdown", "dna-sequence", "ccce-metrics", "pharma-screen", "genomic-query"] as CellType[]).map(type => {
                   const meta = CELL_TYPE_META[type]
                   return (
@@ -897,11 +1150,11 @@ export default function DNANotebookPage() {
           </div>
         </main>
 
-        {/* ─── Enhanced Sidebar ────────────────────────────────────── */}
+        {/* ─── Desktop Sidebar ─────────────────────────────────────── */}
         {sidebarOpen && (
-          <aside className="w-80 flex-shrink-0 border-l border-border/50 bg-card/30 backdrop-blur-sm overflow-hidden flex flex-col" aria-label="Notebook sidebar">
+          <aside className="w-80 flex-shrink-0 border-l border-border/50 bg-card/30 backdrop-blur-sm overflow-hidden flex-col hidden md:flex" aria-label="Notebook sidebar">
             <Tabs value={sidebarTab} onValueChange={setSidebarTab} className="flex flex-col h-full">
-              <TabsList className="mx-3 mt-3 bg-muted/30 h-8">
+              <TabsList className="mx-3 mt-3 bg-muted/30 h-8 flex-shrink-0">
                 <TabsTrigger value="chat" className="text-[10px] h-6 gap-1 flex-1">
                   <MessageSquare className="w-3 h-3" /> Chat
                 </TabsTrigger>
@@ -911,8 +1164,11 @@ export default function DNANotebookPage() {
                 <TabsTrigger value="hardware" className="text-[10px] h-6 gap-1 flex-1">
                   <Cpu className="w-3 h-3" /> HW
                 </TabsTrigger>
-                <TabsTrigger value="agents" className="text-[10px] h-6 gap-1 flex-1">
-                  <Brain className="w-3 h-3" /> Agents
+                <TabsTrigger value="viz" className="text-[10px] h-6 gap-1 flex-1">
+                  <BarChart3 className="w-3 h-3" /> Viz
+                </TabsTrigger>
+                <TabsTrigger value="data" className="text-[10px] h-6 gap-1 flex-1">
+                  <Globe className="w-3 h-3" /> Data
                 </TabsTrigger>
                 <TabsTrigger value="security" className="text-[10px] h-6 gap-1 flex-1">
                   <Shield className="w-3 h-3" /> Sec
@@ -923,30 +1179,18 @@ export default function DNANotebookPage() {
               </TabsList>
 
               <TabsContent value="chat" className="mt-0 flex-1 flex flex-col overflow-hidden">
-                <AIChatPanel messages={chatMessages} onSend={sendChatMessage} />
+                <AIChatPanel />
               </TabsContent>
 
               <ScrollArea className="flex-1 px-3 py-3">
-                <TabsContent value="swarm" className="mt-0">
+                <TabsContent value="swarm" className="mt-0 space-y-4">
                   <SwarmPanel nodes={swarmNodes} />
-                  {telemetryData.flux.length > 3 && (
-                    <div className="mt-4 space-y-2">
-                      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1 flex items-center gap-1.5">
-                        <LineChart className="w-3.5 h-3.5" /> Live Telemetry
-                      </h3>
-                      <div className="space-y-1.5 p-2 rounded-md bg-muted/20">
-                        <TelemetrySparkline data={telemetryData.flux} color="oklch(0.7 0.15 195)" label="Flux" />
-                        <TelemetrySparkline data={telemetryData.pulse} color="oklch(0.75 0.18 85)" label="Pulse" />
-                        <TelemetrySparkline data={telemetryData.lambda} color="oklch(0.65 0.18 160)" label={"\u039B"} />
-                        <TelemetrySparkline data={telemetryData.phi} color="oklch(0.6 0.22 25)" label={"\u03A6"} />
-                      </div>
-                    </div>
-                  )}
+                  <AgentsPanel />
                 </TabsContent>
                 <TabsContent value="hardware" className="mt-0">
                   <HardwarePanel jobs={hardwareJobs} />
                   <div className="mt-4 p-2.5 rounded-md bg-muted/20 space-y-2">
-                    <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">AeternaPorta v2.1</h4>
+                    <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">AeternaPorta v2.1 IGNITION</h4>
                     <div className="grid grid-cols-2 gap-2">
                       {[
                         { label: "Backend", value: "ibm_fez" },
@@ -982,7 +1226,12 @@ export default function DNANotebookPage() {
                     </div>
                   </div>
                 </TabsContent>
-                <TabsContent value="agents" className="mt-0"><AgentsPanel /></TabsContent>
+                <TabsContent value="viz" className="mt-0">
+                  <VisualizationPanel telemetryData={telemetryData} />
+                </TabsContent>
+                <TabsContent value="data" className="mt-0">
+                  <DataSourcesPanel />
+                </TabsContent>
                 <TabsContent value="security" className="mt-0"><SecurityPanel /></TabsContent>
                 <TabsContent value="audit" className="mt-0"><AuditPanel entries={auditLog} /></TabsContent>
               </ScrollArea>
@@ -990,6 +1239,92 @@ export default function DNANotebookPage() {
           </aside>
         )}
       </div>
+
+      {/* ─── Mobile FAB: Add Cell ─────────────────────────────────── */}
+      <div className="fixed bottom-24 right-4 z-40 md:hidden flex flex-col items-end gap-2">
+        {showMobileAddCell && (
+          <div className="bg-card border border-border rounded-xl shadow-lg p-2 space-y-1 animate-fade-in">
+            {(["code", "markdown", "dna-sequence", "ccce-metrics", "pharma-screen", "genomic-query"] as CellType[]).map(type => {
+              const meta = CELL_TYPE_META[type]
+              return (
+                <button key={type} className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+                  onClick={() => addCell(type)}>
+                  {getCellIcon(type)}
+                  {meta.label}
+                </button>
+              )
+            })}
+          </div>
+        )}
+        <button
+          className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center fab shadow-lg"
+          onClick={() => setShowMobileAddCell(!showMobileAddCell)}
+          aria-label="Add new cell"
+        >
+          {showMobileAddCell ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+        </button>
+      </div>
+
+      {/* ─── Mobile Bottom Nav for Panels ─────────────────────────── */}
+      <div className="fixed bottom-0 inset-x-0 bg-card/90 backdrop-blur-md border-t border-border/50 md:hidden z-30 safe-area-bottom">
+        <div className="flex items-center justify-around px-2 py-1.5">
+          {[
+            { id: "chat", icon: <MessageSquare className="w-4 h-4" />, label: "Chat" },
+            { id: "search", icon: <Search className="w-4 h-4" />, label: "Search" },
+            { id: "run", icon: <Play className="w-4 h-4" />, label: "Run All" },
+            { id: "swarm", icon: <Network className="w-4 h-4" />, label: "Swarm" },
+            { id: "hardware", icon: <Cpu className="w-4 h-4" />, label: "HW" },
+          ].map(item => (
+            <button key={item.id}
+              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors min-h-[44px] justify-center ${
+                mobilePanel === item.id ? "text-primary" : "text-muted-foreground"
+              }`}
+              onClick={() => {
+                if (item.id === "run") { runAllCells() }
+                else if (item.id === "search") { setSearchOpen(!searchOpen); setMobilePanel(null) }
+                else { setMobilePanel(mobilePanel === item.id ? null : item.id) }
+              }}
+              aria-label={item.label}
+            >
+              {item.icon}
+              <span className="text-[9px]">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ─── Mobile Sheets ────────────────────────────────────────── */}
+      <MobileSheet open={mobilePanel === "chat"} onClose={() => setMobilePanel(null)} title="AURA Dev Assistant">
+        <div className="h-[60vh]"><AIChatPanel /></div>
+      </MobileSheet>
+
+      <MobileSheet open={mobilePanel === "swarm"} onClose={() => setMobilePanel(null)} title="Swarm Mesh">
+        <div className="space-y-4">
+          <SwarmPanel nodes={swarmNodes} />
+          <AgentsPanel />
+          {telemetryData.flux.length > 3 && <VisualizationPanel telemetryData={telemetryData} />}
+        </div>
+      </MobileSheet>
+
+      <MobileSheet open={mobilePanel === "hardware"} onClose={() => setMobilePanel(null)} title="Quantum Hardware">
+        <HardwarePanel jobs={hardwareJobs} />
+        <div className="mt-4 p-2.5 rounded-md bg-muted/20 space-y-2">
+          <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">AeternaPorta v2.1 IGNITION</h4>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { label: "Backend", value: "ibm_fez" },
+              { label: "Qubits", value: "120" },
+              { label: "\u039B\u03A6", value: "2.176e-8" },
+              { label: "\u03B8_lock", value: "51.843\u00B0" },
+            ].map(m => (
+              <div key={m.label} className="flex items-center justify-between">
+                <span className="text-[10px] text-muted-foreground">{m.label}</span>
+                <span className="text-[10px] font-mono text-foreground">{m.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </MobileSheet>
     </div>
   )
 }
