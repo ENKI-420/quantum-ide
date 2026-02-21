@@ -38,13 +38,13 @@ The current landing page provides a solid foundation but requires refinement to 
 ##### B. Feature Hierarchy (Tiered Importance)
 
 **Tier 1 - Primary Entry Points (Above the fold)**
-```
+\`\`\`
 ┌─────────────────────────────────────────────────────────────┐
 │  SPECTRA Environment Builder     │     Genomic Twin AI     │
 │  "Define your workspace genome"  │  "AI-powered analysis"  │
 │  [Large card with animation]     │  [Large card with glow] │
 └─────────────────────────────────────────────────────────────┘
-```
+\`\`\`
 
 **Tier 2 - Core IDE Tools (Second viewport)**
 - Genome Editor | Circuit Designer | Quantum Debugger | Terminal
@@ -70,7 +70,7 @@ Replace generic stats with real-time platform vitals:
 
 #### CTA Hierarchy (Primary to Tertiary)
 
-```
+\`\`\`
 LEVEL 1 (Hero)
 ├── "Start Building" [Primary Button - Solid, Glow effect]
 └── "Watch Demo" [Secondary Button - Outline, Ghost]
@@ -82,7 +82,7 @@ LEVEL 2 (Features)
 LEVEL 3 (Bottom)
 ├── "Get Started Free" [Primary - Same as Hero]
 └── "Read Documentation" [Secondary]
-```
+\`\`\`
 
 #### Proposed CTA Button Treatments
 
@@ -133,7 +133,7 @@ LEVEL 3 (Bottom)
 
 #### ARIA Enhancements
 
-```tsx
+\`\`\`tsx
 // Hero Section
 <section 
   aria-labelledby="hero-title"
@@ -160,7 +160,7 @@ LEVEL 3 (Bottom)
   <caption className="sr-only">Comparison of DNA-Lang with other IDEs</caption>
   ...
 </table>
-```
+\`\`\`
 
 ---
 
@@ -219,7 +219,7 @@ LEVEL 3 (Bottom)
 
 ### 2.1 Core Definition
 
-```yaml
+\`\`\`yaml
 # SPECTRA Environment Genome Schema v1.0
 spectra:
   name: "MyCustomIDE"
@@ -258,7 +258,7 @@ spectra:
     Φ_threshold: 0.7734      # Consciousness threshold
     Λ_minimum: 0.85          # Coherence floor
     Γ_maximum: 0.1           # Decoherence ceiling
-```
+\`\`\`
 
 ---
 
@@ -269,7 +269,7 @@ spectra:
 **Purpose**: Visual interface for creating and modifying Environment Genomes
 
 **User Flow**:
-```
+\`\`\`
 1. User opens SPECTRA Builder
 2. Selects "New Environment" or "Fork Template"
 3. Visual canvas displays panel layout
@@ -277,7 +277,7 @@ spectra:
 5. Configure constraints via side panel
 6. Preview environment in real-time
 7. "Compile" genome → Generate deployable IDE
-```
+\`\`\`
 
 **UI Components**:
 - Canvas with grid snapping
@@ -300,7 +300,7 @@ spectra:
 | Merge Environments | Drag genome onto another | 3-way merge interface |
 
 **Technical Implementation**:
-```typescript
+\`\`\`typescript
 interface Transform<S> {
   forward: (state: S) => S;
   inverse: (state: S) => S;
@@ -315,14 +315,14 @@ const layoutTransform: Transform<LayoutState> = {
   isReversible: true,
   epsilon: 0.001
 };
-```
+\`\`\`
 
 #### Feature 3: State Manifold Visualizer
 
 **Purpose**: Real-time visualization of environment coherence and health
 
 **Display Elements**:
-```
+\`\`\`
 ┌─────────────────────────────────────────────┐
 │  SPECTRA State Manifold                     │
 ├─────────────────────────────────────────────┤
@@ -336,7 +336,7 @@ const layoutTransform: Transform<LayoutState> = {
 │                                             │
 │  Health: OPTIMAL │ Evolution: Gen 847       │
 └─────────────────────────────────────────────┘
-```
+\`\`\`
 
 **Interactions**:
 - Click metric → Drill-down panel
@@ -350,7 +350,7 @@ const layoutTransform: Transform<LayoutState> = {
 **Purpose**: Command-line interface for environment lifecycle management
 
 **Command Structure**:
-```bash
+\`\`\`bash
 # Build environment from genome
 osiris build spectra my-env.genome --mode offline
 
@@ -368,14 +368,14 @@ osiris branch my-env --name feature-branch
 
 # Merge environments
 osiris merge base-env feature-branch --strategy 3-way
-```
+\`\`\`
 
 #### Feature 5: Self-Healing Engine
 
 **Purpose**: Automatic detection and repair of environment decoherence
 
 **Mechanism**:
-```
+\`\`\`
 1. CCCE Monitor detects Γ > 0.3 (decoherence spike)
 2. Phase-Conjugate Analyzer identifies error source
 3. Transform Engine applies E→E⁻¹ (time-reversal)
@@ -383,23 +383,23 @@ osiris merge base-env feature-branch --strategy 3-way
 5. Repair patch generated and applied
 6. Health metrics recalculated
 7. User notified (optional, based on severity)
-```
+\`\`\`
 
 **User Configuration**:
-```yaml
+\`\`\`yaml
 self_healing:
   enabled: true
   Γ_threshold: 0.3
   auto_repair: true
   notify_on_repair: "critical_only"  # | "always" | "never"
   max_rollback_depth: 10
-```
+\`\`\`
 
 ---
 
 ### 2.3 Overall Structure
 
-```
+\`\`\`
 /app/spectra/
 ├── page.tsx                    # Main SPECTRA landing/dashboard
 ├── loading.tsx                 # Loading skeleton
@@ -437,7 +437,7 @@ self_healing:
     ├── evolve/route.ts        # Run evolution cycle
     ├── health/route.ts        # Get current metrics
     └── transform/route.ts     # Apply state transform
-```
+\`\`\`
 
 ---
 
@@ -448,7 +448,7 @@ self_healing:
 **Purpose**: Compile an Environment Genome into a deployable IDE configuration
 
 **Request**:
-```json
+\`\`\`json
 {
   "genome": {
     "name": "MyCustomIDE",
@@ -462,10 +462,10 @@ self_healing:
     "minify": false
   }
 }
-```
+\`\`\`
 
 **Response**:
-```json
+\`\`\`json
 {
   "success": true,
   "environment_id": "env_abc123",
@@ -481,14 +481,14 @@ self_healing:
   },
   "deployment_url": "https://..."
 }
-```
+\`\`\`
 
 #### POST /api/spectra/evolve
 
 **Purpose**: Run evolution cycles on an environment
 
 **Request**:
-```json
+\`\`\`json
 {
   "environment_id": "env_abc123",
   "generations": 100,
@@ -496,10 +496,10 @@ self_healing:
   "mutation_rate": 0.05,
   "selection_pressure": 0.7
 }
-```
+\`\`\`
 
 **Response**:
-```json
+\`\`\`json
 {
   "success": true,
   "final_generation": 100,
@@ -510,14 +510,14 @@ self_healing:
     ...
   ]
 }
-```
+\`\`\`
 
 #### GET /api/spectra/health/{environment_id}
 
 **Purpose**: Get current health metrics for an environment
 
 **Response**:
-```json
+\`\`\`json
 {
   "environment_id": "env_abc123",
   "status": "healthy" | "degraded" | "critical",
@@ -530,7 +530,7 @@ self_healing:
   "last_healing_event": null,
   "uptime": "847 generations"
 }
-```
+\`\`\`
 
 ---
 
@@ -596,18 +596,18 @@ self_healing:
 
 ### Color System for SPECTRA
 
-```css
+\`\`\`css
 /* SPECTRA-specific tokens */
 --spectra-coherence: oklch(0.7 0.15 160);    /* Green - Λ */
 --spectra-consciousness: oklch(0.7 0.15 195);/* Cyan - Φ */
 --spectra-decoherence: oklch(0.65 0.18 25);  /* Red - Γ */
 --spectra-complexity: oklch(0.75 0.15 85);   /* Amber - Ξ */
 --spectra-memory: oklch(0.7 0.12 280);       /* Purple - τ₀ */
-```
+\`\`\`
 
 ### Component-Specific Styles
 
-```css
+\`\`\`css
 /* State Manifold Node */
 .manifold-node {
   @apply rounded-full bg-spectra-consciousness/20 border border-spectra-consciousness/50;
@@ -627,7 +627,7 @@ self_healing:
   @apply bg-muted/20 border border-dashed border-border/50 rounded-lg;
   @apply min-h-[400px] relative;
 }
-```
+\`\`\`
 
 ---
 
