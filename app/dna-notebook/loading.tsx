@@ -46,7 +46,7 @@ export default function DNANotebookLoading() {
             </div>
           ))}
         </div>
-        <div className="w-72 border-l border-border/50 p-3 space-y-3">
+        <div className="w-80 border-l border-border/50 p-3 space-y-3">
           <Skeleton className="w-full h-8 rounded" />
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="w-full h-12 rounded" />
