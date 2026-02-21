@@ -32,6 +32,8 @@ import {
   Zap,
   Network,
   Cpu,
+  Radio,
+  Lock,
 } from "lucide-react"
 
 const platformFeatures = [
@@ -169,6 +171,19 @@ const platformFeatures = [
     description: "Genomic twin simulation on 127-qubit QPUs with 86.9% Bell fidelity and QWC Level 3 optimization.",
     href: "/digital-twin",
     category: "Simulation",
+    icon: Radio,
+    title: "Sovereign Cockpit",
+    description: "11D-CRSM control plane with Kyber-Lattice security, intent processing, and quantum resonance verification.",
+    href: "/sovereign-cockpit",
+    category: "Core IDE",
+    badge: "New",
+  },
+  {
+    icon: Lock,
+    title: "Kyber Security",
+    description: "Post-quantum cryptographic identity with phase-conjugate filtering and topological moat protection.",
+    href: "/sovereign-cockpit",
+    category: "Security",
     badge: "New",
   },
 ]
@@ -217,6 +232,7 @@ const categories = [
   "Visual Tools",
   "AI Tools",
   "Simulation",
+  "Security",
   "Ecosystem",
   "Management",
   "Customization",
@@ -297,7 +313,7 @@ export default function Page() {
           {/* Features grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredFeatures.map((feature, i) => (
-              <Link key={feature.href} href={feature.href}>
+              <Link key={feature.title} href={feature.href}>
                 <Card
                   className={`h-full p-5 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all group ${mounted ? "animate-fade-in" : ""}`}
                   style={{ animationDelay: `${i * 50}ms` }}
