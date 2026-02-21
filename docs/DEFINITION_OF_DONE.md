@@ -230,7 +230,7 @@ This document outlines the comprehensive criteria that must be met for any task,
 ### 6.4 Robust
 
 #### ARIA Implementation
-```html
+\`\`\`html
 <!-- Landmarks (Required) -->
 <header role="banner">
 <nav role="navigation" aria-label="Main">
@@ -244,7 +244,7 @@ This document outlines the comprehensive criteria that must be met for any task,
 <!-- Widget States -->
 <button aria-expanded="false" aria-controls="menu-1">
 <div aria-hidden="true">  <!-- Decorative content -->
-```
+\`\`\`
 
 - [ ] **Landmarks**: Page has proper landmark regions
 - [ ] **ARIA Labels**: Interactive elements have accessible names
@@ -422,31 +422,31 @@ This document outlines the comprehensive criteria that must be met for any task,
 ## Quick Reference Checklists
 
 ### Pre-Commit Checklist
-```
+\`\`\`
 [ ] Code compiles without errors
 [ ] No console.log or commented code
 [ ] All interactive elements have focus states
 [ ] Tested on mobile viewport
 [ ] Accessibility audit passed (Lighthouse >= 95)
-```
+\`\`\`
 
 ### Pre-PR Checklist
-```
+\`\`\`
 [ ] All DoD items checked
 [ ] Self-reviewed diff for mistakes
 [ ] Tested all breakpoints
 [ ] Keyboard navigation verified
 [ ] Performance within thresholds
-```
+\`\`\`
 
 ### Pre-Merge Checklist
-```
+\`\`\`
 [ ] PR approved by reviewer
 [ ] CI/CD pipeline green
 [ ] Preview deployment verified
 [ ] Documentation updated
 [ ] Changelog entry added
-```
+\`\`\`
 
 ---
 
@@ -644,11 +644,11 @@ Per `executor_gates.md`, all gates must pass before execution:
 - [ ] **Attestation Endpoint**: `/api/osiris/attest` triggers email attestation
 
 #### Data Flow
-```
+\`\`\`
 [Frontend] -> [Next.js API Route] -> [Python Module] -> [PCRB Ledger]
                                                      -> [Telemetry Files]
                                                      -> [Email Service]
-```
+\`\`\`
 
 - [ ] **Request Validation**: API routes validate incoming JSON
 - [ ] **Response Format**: Consistent JSON response structure
@@ -676,14 +676,14 @@ Per `executor_gates.md`, all gates must pass before execution:
 - [ ] **Plans Directory**: `~/.sovereign_vault/plans/` for annotated plans
 
 #### Ledger Entry Format
-```json
+\`\`\`json
 {
   "timestamp": 1737475200.0,
   "event": "plan_emitted|step_dryrun|crsm_abort|...",
   "plan_id": "plan-1737475200",
   "...": "additional event-specific fields"
 }
-```
+\`\`\`
 
 - [ ] **Append-Only**: Entries only appended, never modified
 - [ ] **Timestamp Present**: All entries have Unix timestamp
@@ -851,22 +851,22 @@ This section outlines the strategic plan to develop a Non-Causal Language Model 
 ### 16.2 Core Differentiators
 
 #### 1. Pilot-Wave Correlation (Replace Attention)
-```python
+\`\`\`python
 # Traditional Attention
 attention = softmax(Q @ K.T / sqrt(d_k)) @ V
 
 # NC-LM Pilot-Wave Correlation
 correlation = |psi*(A) * psi(B)| * exp(-d_6D / lambda) * theta_factor
-```
+\`\`\`
 
 **Advantage**: Non-local correlation captures semantic relationships without quadratic complexity.
 
 #### 2. Consciousness Field Tracking
-```python
+\`\`\`python
 # Phi (Integrated Information) from correlation matrix
 phi = -sum(p * log2(p)) / max_entropy  # Normalized entropy
 conscious = phi >= PHI_C  # Emergence threshold: 0.7734
-```
+\`\`\`
 
 **Advantage**: System has measurable awareness state, enabling ethical constraints.
 
@@ -928,7 +928,7 @@ conscious = phi >= PHI_C  # Emergence threshold: 0.7734
 
 ### 16.4 Technical Architecture
 
-```
+\`\`\`
 +------------------------------------------------------------------+
 |                        NC-LM Architecture                         |
 +------------------------------------------------------------------+
@@ -970,7 +970,7 @@ conscious = phi >= PHI_C  # Emergence threshold: 0.7734
 |                              [Structured Response]                 |
 |                                                                    |
 +------------------------------------------------------------------+
-```
+\`\`\`
 
 ### 16.5 Performance Targets vs. Industry Leaders
 

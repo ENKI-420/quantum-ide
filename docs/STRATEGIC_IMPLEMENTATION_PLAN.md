@@ -46,13 +46,13 @@ The DNA-Lang platform requires systematic enhancement across six major domains:
 
 #### Color Audit
 Verify all components use design tokens:
-```css
+\`\`\`css
 --primary: oklch(0.7 0.15 195);      /* Cyan - Quantum/Tech */
 --secondary: oklch(0.65 0.18 160);   /* Emerald - Consciousness */
 --accent: oklch(0.75 0.18 85);       /* Amber - Lambda-Phi */
 --background: oklch(0.09 0.01 260);  /* Dark foundation */
 --muted: oklch(0.65 0.02 260);       /* Subtle elements */
-```
+\`\`\`
 
 #### Typography Audit
 Ensure consistent use of:
@@ -85,7 +85,7 @@ Ensure consistent use of:
 | `/api/osiris/ccce` | GET | Current CCCE metrics | ncphysics.py |
 
 #### Integration Architecture
-```
+\`\`\`
 [Next.js API Route] 
        |
        v
@@ -96,7 +96,7 @@ Ensure consistent use of:
        |
        v
 [PCRB Ledger] --> Immutable audit trail
-```
+\`\`\`
 
 ### 2.2 Python Service Layer
 
@@ -106,7 +106,7 @@ Ensure consistent use of:
 3. **Serverless Functions**: Python functions on Vercel (limited)
 
 #### Recommended: FastAPI Sidecar
-```python
+\`\`\`python
 # osiris/server.py
 from fastapi import FastAPI
 from osiris.planner import Planner, Executor
@@ -123,7 +123,7 @@ async def generate_plan(intent: str):
 @app.get("/ccce")
 async def get_ccce():
     return monitor_phi()
-```
+\`\`\`
 
 ### 2.3 Environment Configuration
 
@@ -152,7 +152,7 @@ async def get_ccce():
 | XiProduction | Negentropy rate | 5 seconds |
 
 #### Implementation
-```typescript
+\`\`\`typescript
 // hooks/use-telemetry.ts
 export function useTelemetry() {
   const { data, error, isLoading } = useSWR(
@@ -170,7 +170,7 @@ export function useTelemetry() {
     error
   }
 }
-```
+\`\`\`
 
 ### 3.2 NC-LM Chat Interface
 
@@ -181,7 +181,7 @@ export function useTelemetry() {
 - Intent deduction visualization
 
 #### Architecture
-```
+\`\`\`
 [User Input] --> [Tokenizer] --> [6D-CRSM Manifold]
                                         |
                                         v
@@ -198,12 +198,12 @@ export function useTelemetry() {
                           |                |
                           v                v
                     [Stream Response to UI]
-```
+\`\`\`
 
 ### 3.3 WebSocket Integration
 
 #### Telemetry Streaming
-```typescript
+\`\`\`typescript
 // app/api/telemetry/stream/route.ts
 export async function GET(request: Request) {
   const encoder = new TextEncoder()
@@ -232,7 +232,7 @@ export async function GET(request: Request) {
     }
   })
 }
-```
+\`\`\`
 
 ---
 
@@ -251,7 +251,7 @@ export async function GET(request: Request) {
 ### 4.2 Optimization Strategies
 
 #### Image Optimization
-```tsx
+\`\`\`tsx
 // Use Next.js Image for all images
 import Image from 'next/image'
 
@@ -263,10 +263,10 @@ import Image from 'next/image'
   priority // For LCP image
   placeholder="blur"
 />
-```
+\`\`\`
 
 #### Font Optimization
-```tsx
+\`\`\`tsx
 // Already configured in layout.tsx
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ['400', '500', '600', '700'],
@@ -274,10 +274,10 @@ const ibmPlexSans = IBM_Plex_Sans({
   display: 'swap', // Ensure text visible during load
   preload: true
 })
-```
+\`\`\`
 
 #### Code Splitting
-```tsx
+\`\`\`tsx
 // Lazy load heavy components
 const QuantumVisualization = dynamic(
   () => import('@/components/quantum-field-visualization'),
@@ -286,7 +286,7 @@ const QuantumVisualization = dynamic(
     ssr: false 
   }
 )
-```
+\`\`\`
 
 ### 4.3 Bundle Optimization
 
@@ -305,7 +305,7 @@ const QuantumVisualization = dynamic(
 ### 5.1 Testing Protocol
 
 #### Unit Tests
-```typescript
+\`\`\`typescript
 // __tests__/components/quantum-button.test.tsx
 import { render, screen, fireEvent } from '@testing-library/react'
 import { QuantumButton } from '@/components/ui/quantum-button'
@@ -328,10 +328,10 @@ describe('QuantumButton', () => {
     expect(onClick).toHaveBeenCalled()
   })
 })
-```
+\`\`\`
 
 #### Integration Tests
-```typescript
+\`\`\`typescript
 // __tests__/api/osiris.test.ts
 describe('OSIRIS API', () => {
   it('generates valid plan from intent', async () => {
@@ -345,10 +345,10 @@ describe('OSIRIS API', () => {
     expect(plan.steps.length).toBeGreaterThan(0)
   })
 })
-```
+\`\`\`
 
 #### Accessibility Tests
-```typescript
+\`\`\`typescript
 // __tests__/accessibility.test.tsx
 import { axe, toHaveNoViolations } from 'jest-axe'
 
@@ -361,7 +361,7 @@ describe('Accessibility', () => {
     expect(results).toHaveNoViolations()
   })
 })
-```
+\`\`\`
 
 ### 5.2 Documentation Requirements
 
@@ -381,7 +381,7 @@ Each UI component must have:
 
 ### 5.3 Compliance Checklist
 
-```
+\`\`\`
 Pre-Release Checklist:
 [ ] All Lighthouse scores meet targets
 [ ] WCAG 2.1 AA compliance verified
@@ -393,7 +393,7 @@ Pre-Release Checklist:
 [ ] Documentation complete
 [ ] Security audit passed
 [ ] Performance benchmarks met
-```
+\`\`\`
 
 ---
 
@@ -424,12 +424,12 @@ Pre-Release Checklist:
 - Session duration trends
 
 #### Iteration Cycle
-```
+\`\`\`
 [Collect Data] --> [Analyze Patterns] --> [Prioritize Changes]
        ^                                          |
        |                                          v
   [Measure Impact] <-- [Implement] <-- [Design Solution]
-```
+\`\`\`
 
 ### 6.3 Performance Budget
 
@@ -445,7 +445,7 @@ Pre-Release Checklist:
 
 ## Implementation Timeline
 
-```
+\`\`\`
 Week 1-2: Foundation Enhancement
 ├── Day 1-3: Landing page audit and redesign
 ├── Day 4-5: Design system compliance check
@@ -475,7 +475,7 @@ Week 5-6: Quality Assurance
 ├── Day 4-5: Accessibility testing
 ├── Day 6-7: Documentation completion
 └── Day 8-10: Final compliance verification
-```
+\`\`\`
 
 ---
 
@@ -517,7 +517,7 @@ Week 5-6: Quality Assurance
 
 ## Appendix: File Structure
 
-```
+\`\`\`
 /
 ├── app/
 │   ├── api/
@@ -563,7 +563,7 @@ Week 5-6: Quality Assurance
     ├── components/
     ├── api/
     └── accessibility/
-```
+\`\`\`
 
 ---
 

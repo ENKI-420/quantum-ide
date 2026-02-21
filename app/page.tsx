@@ -33,7 +33,6 @@ import {
   Network,
   Cpu,
   Radio,
-  Lock,
 } from "lucide-react"
 
 const platformFeatures = [

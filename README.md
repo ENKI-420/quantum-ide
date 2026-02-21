@@ -1,5 +1,3 @@
- 
-
 # DNA-Lang Sovereign SDK v100 README
 
 ## Overview
@@ -23,14 +21,14 @@ DNA-Lang Sovereign SDK v100 provides a production-ready quantum-classical co-des
 
 ## Architecture
 
-```
+\`\`\`
 dna::}{::lang v51.843 (11D-CRSM Layers 7+5)
 ├── Fold 7 Engine (Levinthal Paradox Resolution)
 ├── Bio-Magnetic State Machine
 ├── Hardware Introspection Layer
 ├── AURA/AIDEN Autonomous Agents
 └── Sovereign Biological Defense Framework
-```
+\`\`\`
 
 ## Deployment
 
