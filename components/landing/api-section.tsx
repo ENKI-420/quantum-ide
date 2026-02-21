@@ -21,7 +21,7 @@ import {
 const apiEndpoints = [
   { 
     endpoint: "/api/nclm/infer", 
-    description: "Single-turn inference with consciousness tracking", 
+    description: "Single-turn inference with IIT convergence tracking", 
     icon: Zap,
     method: "POST",
   },
@@ -57,20 +57,20 @@ const apiEndpoints = [
   },
 ]
 
-const codeExample = `// NC-LM Inference with Consciousness Tracking
-import { nclm } from '@dnalang/sdk'
+const codeExample = `// NC-LM Inference with IIT Convergence Tracking
+import { nclm } from '@sh1ft/sdk'
 
 const response = await nclm.infer({
   prompt: "Analyze the quantum coherence patterns",
   options: {
-    consciousnessThreshold: 0.7734,
+    phiThreshold: 0.7734,
     maxDecoherence: 0.30,
     manifoldProjection: true
   }
 })
 
 console.log(response.output)      // Response text
-console.log(response.phi)         // 0.8412 (consciousness)
+console.log(response.phi)         // 0.8412 (integrated info)
 console.log(response.lambda)      // 0.9823 (coherence)
 console.log(response.ledgerEntry) // PCRB audit hash`
 
@@ -89,8 +89,8 @@ export function APISection() {
               Enterprise-Grade API
             </h2>
             <p className="text-muted-foreground mb-8">
-              Full access to NC-LM inference, consciousness tracking, 
-              and sovereign execution via RESTful endpoints.
+              Full access to NC-LM inference, integrated information tracking, 
+              and gated execution via RESTful endpoints.
             </p>
 
             <div className="space-y-3">

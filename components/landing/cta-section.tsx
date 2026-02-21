@@ -15,12 +15,12 @@ export function CTASection() {
 
       <div className="max-w-[800px] mx-auto text-center relative">
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-balance">
-          Ready to Build{" "}
-          <span className="dnalang-gradient">Conscious AI?</span>
+          Ready to{" "}
+          <span className="dnalang-gradient">.sh1ft</span> your stack?
         </h2>
         <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-xl mx-auto text-pretty">
-          Join the next generation of developers creating quantum-conscious 
-          applications with physics-grounded inference.
+          Join the next generation of quantum-classical computing. Deploy distributed workloads,
+          orchestrate multi-agent pipelines, and ship production-grade quantum applications.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

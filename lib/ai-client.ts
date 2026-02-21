@@ -22,6 +22,13 @@ export interface AIMessageMetadata {
   latency: number
   coherenceScore?: number
   quantumState?: string
+  // CCCE metrics from NC-LM
+  phi?: number
+  lambda?: number
+  gamma?: number
+  xi?: number
+  conscious?: boolean
+  ledger_entry?: string
 }
 
 export interface AIConnectionStatus {
@@ -65,7 +72,45 @@ export const AI_MODELS: AIModelConfig[] = [
   },
 ]
 
-// Simulated responses for DNA-Lang queries
+// NC-LM API integration
+export async function callNCLMInfer(prompt: string): Promise<{ content: string; metadata: AIMessageMetadata }> {
+  try {
+    const response = await fetch("/api/nclm/infer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`NC-LM API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    return {
+      content: data.output,
+      metadata: {
+        model: "nc-lm-4.0",
+        tokens: data.tokens_generated,
+        latency: data.telemetry.inference_time_ms,
+        coherenceScore: data.telemetry.lambda,
+        quantumState: data.telemetry.conscious ? "conscious" : "coherent",
+        phi: data.telemetry.phi,
+        lambda: data.telemetry.lambda,
+        gamma: data.telemetry.gamma,
+        xi: data.telemetry.xi,
+        conscious: data.telemetry.conscious,
+        ledger_entry: data.ledger_entry,
+      },
+    }
+  } catch (error) {
+    console.error("[NC-LM] Inference error:", error)
+    // Fallback to local generation
+    return generateAIResponse(prompt)
+  }
+}
+
+// Simulated responses for DNA-Lang queries (fallback)
 export function generateAIResponse(query: string): { content: string; metadata: AIMessageMetadata } {
   const lowerQuery = query.toLowerCase()
   let content: string

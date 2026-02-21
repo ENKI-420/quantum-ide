@@ -23,6 +23,7 @@ import {
   Workflow,
   Radio,
   Home,
+  Zap,
 } from "lucide-react"
 
 interface CommandItem {
@@ -112,6 +113,38 @@ const commands: CommandItem[] = [
     category: "Research",
   },
   {
+    id: "genesis",
+    label: "Genesis 3.0 Cockpit",
+    description: "Sovereign telemetry command",
+    icon: Radio,
+    href: "/genesis-cockpit",
+    category: "Platform",
+  },
+  {
+    id: "sovereign-security",
+    label: "Sovereign Security",
+    description: "Platform integrity command center",
+    icon: Shield,
+    href: "/sovereign-security",
+    category: "Platform",
+  },
+  {
+    id: "repo-evolution",
+    label: "Repository Evolution",
+    description: "AETERNA_PORTA migration dashboard",
+    icon: Workflow,
+    href: "/repo-evolution",
+    category: "Tools",
+  },
+  {
+    id: "wardenclyffe",
+    label: "WardenClyffe-Q Engine",
+    description: "Information-gated energy extraction",
+    icon: Zap,
+    href: "/wardenclyffe",
+    category: "Platform",
+  },
+  {
     id: "data",
     label: "Data Platform",
     description: "Real-time telemetry",
@@ -157,7 +190,12 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const filteredCommands = commands.filter((cmd) => {
     const searchLower = search.toLowerCase()
@@ -230,7 +268,7 @@ export function CommandPalette() {
     setSelectedIndex(0)
   }, [search])
 
-  if (!open) return null
+  if (!mounted || !open) return null
 
   return (
     <div

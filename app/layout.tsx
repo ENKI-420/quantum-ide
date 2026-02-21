@@ -21,9 +21,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "DNA::}{::lang - IDE Development Platform",
+  title: ".sh1ft — Hybrid Quantum-Classical Computing Platform",
   description:
-    "Build, customize, and extend your own integrated development environments using biological computing paradigms.",
+    "Build, deploy, and orchestrate distributed quantum-classical workloads with multi-agent coordination, error-corrected circuits, and high-dimensional manifold optimization.",
   generator: "v0.app",
 }
 

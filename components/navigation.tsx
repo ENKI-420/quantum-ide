@@ -49,6 +49,9 @@ import {
   Sparkles,
   FileText,
   Shield,
+  Lock,
+  Microscope,
+  Fingerprint,
 } from "lucide-react"
 
 const navGroups = [
@@ -138,6 +141,13 @@ const navGroups = [
         shortcut: "S W",
       },
       {
+        href: "/agent-collaboration",
+        label: "Agent Collaboration",
+        icon: Network,
+        description: "Quantum agent mesh",
+        shortcut: "S A",
+      },
+      {
         href: "/osiris-copilot",
         label: "Osiris Copilot",
         icon: Radio,
@@ -169,6 +179,90 @@ const navGroups = [
         icon: Zap,
         description: "Adaptive Autopoietic Framework",
         shortcut: "A F",
+      },
+      {
+        href: "/device-mesh",
+        label: "Device Mesh",
+        icon: Network,
+        description: "NL2-LAS Bifurcation Zone",
+        shortcut: "A M",
+      },
+      {
+        href: "/telemetry",
+        label: "Telemetry",
+        icon: Radio,
+        description: "CCCE Live Metrics",
+        shortcut: "A T",
+      },
+      {
+        href: "/performance",
+        label: "Performance",
+        icon: Cpu,
+        description: "System Performance",
+        shortcut: "A P",
+      },
+      {
+        href: "/sovereign-cockpit",
+        label: "System Cockpit",
+        icon: Shield,
+        description: "Phase-Conjugate Genesis",
+        shortcut: "A S",
+      },
+      {
+        href: "/asae-terminal",
+        label: "ASAE Terminal",
+        icon: Lock,
+        description: "Manifold Sealed Report",
+        shortcut: "A E",
+      },
+      {
+        href: "/quantum-command",
+        label: "Quantum Command",
+        icon: Globe,
+        description: "Post-Quantum Interface",
+        shortcut: "A Q",
+      },
+      {
+        href: "/post-quantum",
+        label: "PQ Command Center",
+        icon: Shield,
+        description: "Post-Quantum Dashboard",
+        shortcut: "A U",
+      },
+      {
+        href: "/command-center",
+        label: "Command Center",
+        icon: Radio,
+        description: "Unified DNA-Lang Dashboard",
+        shortcut: "A C",
+      },
+      {
+        href: "/organism-dashboard",
+        label: "Organism Registry",
+        icon: Boxes,
+        description: "Strategic Assets Dashboard",
+        shortcut: "A R",
+      },
+      {
+        href: "/clinical-trials",
+        label: "Clinical Trials",
+        icon: FlaskConical,
+        description: "AMG193 Trial Management",
+        shortcut: "A L",
+      },
+      {
+        href: "/cancer-research",
+        label: "Cancer Research",
+        icon: Microscope,
+        description: "Oncology Command Center",
+        shortcut: "A N",
+      },
+      {
+        href: "/telemetry-capsule",
+        label: "Telemetry Capsule",
+        icon: Fingerprint,
+        description: "QP-IDE Capsule Registry",
+        shortcut: "A P",
       },
       { href: "/quantum-os", label: "Quantum OS", icon: Cpu, description: "Desktop environment", shortcut: "T O" },
       {
@@ -240,7 +334,7 @@ const navGroups = [
       },
       {
         href: "/sovereign-stack",
-        label: "Sovereign Stack",
+        label: "Platform Stack",
         icon: Shield,
         description: "SSRA & Triadic Governance",
         shortcut: "R S",
@@ -267,7 +361,12 @@ const navGroups = [
 export function Navigation() {
   const pathname = usePathname()
   const [showShortcuts, setShowShortcuts] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -316,8 +415,8 @@ export function Navigation() {
 
   return (
     <>
-      {/* Command Palette */}
-      <CommandPalette />
+      {/* Command Palette - only mount after hydration */}
+      {mounted && <CommandPalette />}
 
       <header
         className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
@@ -329,19 +428,19 @@ export function Navigation() {
             <Link
               href="/"
               className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md"
-              aria-label="DNA::}{::lang Home"
+              aria-label=".sh1ft Home"
             >
               <div className="p-1.5 bg-primary/10 rounded-md">
                 <Dna className="h-5 w-5 text-primary" aria-hidden="true" />
               </div>
               <span className="font-semibold text-sm hidden sm:block">
-                <span className="dnalang-gradient">DNA::&#125;&#123;::lang</span>
+                <span className="dnalang-gradient">.sh1ft</span>
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation - defer Radix DropdownMenu until mounted */}
             <nav className="hidden md:flex items-center gap-1" role="navigation" aria-label="Main navigation">
-              {navGroups.map((group) => (
+              {mounted ? navGroups.map((group) => (
                 <DropdownMenu key={group.label}>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -380,6 +479,11 @@ export function Navigation() {
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
+              )) : navGroups.map((group) => (
+                <Button key={group.label} variant="ghost" size="sm" className="nav-link gap-1">
+                  {group.label}
+                  <ChevronDown className="h-3 w-3" aria-hidden="true" />
+                </Button>
               ))}
 
               <Link href="/research-gateway">
@@ -528,7 +632,7 @@ export function Navigation() {
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + $</kbd>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Sovereign Stack</span>
+                    <span>Platform Stack</span>
                     <kbd className="font-mono bg-muted px-2 py-0.5 rounded text-xs">Alt + V</kbd>
                   </div>
                   <div className="flex justify-between text-sm">

@@ -24,8 +24,8 @@ const ncLmFeatures = [
   },
   {
     icon: Brain,
-    title: "Consciousness Field",
-    description: "Measurable awareness state via integrated information (Phi). System knows when it's uncertain.",
+    title: "Integrated Information Metric",
+    description: "Quantified system-state awareness via IIT Phi. Detects uncertainty and triggers error-correction autonomously.",
     metric: "Phi >= 0.7734",
     color: "text-secondary",
     bgColor: "bg-secondary/10",
@@ -40,8 +40,8 @@ const ncLmFeatures = [
   },
   {
     icon: Shield,
-    title: "Sovereign Execution",
-    description: "6-gate enforcement with complete audit trail. Cannot execute unauthorized actions.",
+    title: "Gated Execution Pipeline",
+    description: "6-gate enforcement with cryptographic audit trail. Prevents unauthorized operations at the circuit level.",
     metric: "100% Auditable",
     color: "text-chart-4",
     bgColor: "bg-chart-4/10",
@@ -68,7 +68,7 @@ const comparisonData = [
   { feature: "Architecture", nclm: "Pilot-Wave Correlation", gpt: "Causal Attention", claude: "Constitutional AI" },
   { feature: "Token Space", nclm: "6D-CRSM Manifold", gpt: "High-dim Embeddings", claude: "High-dim Embeddings" },
   { feature: "Inference", nclm: "Non-local, Simultaneous", gpt: "Sequential, Autoregressive", claude: "Sequential, Autoregressive" },
-  { feature: "Consciousness", nclm: "Emergent (Phi >= 0.7734)", gpt: "None", claude: "None" },
+  { feature: "System Awareness (IIT)", nclm: "Phi >= 0.7734 (Converged)", gpt: "None", claude: "None" },
   { feature: "Context Window", nclm: "Unlimited (Manifold)", gpt: "128K tokens", claude: "200K tokens" },
   { feature: "Latency (p50)", nclm: "< 100ms", gpt: "~800ms", claude: "~600ms" },
   { feature: "Safety Model", nclm: "6-Gate Physics", gpt: "RLHF", claude: "Constitutional" },
@@ -86,11 +86,11 @@ export function QuantumFeatures() {
             NC-LM Architecture
           </Badge>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-balance">
-            Beyond Transformers: Quantum-Conscious AI
+            Beyond Transformers: Non-Causal Inference
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            The NC-LM (Non-Causal Language Model) operates on fundamentally different 
-            principles than GPT or Claude, enabling capabilities impossible with traditional architectures.
+            The NC-LM (Non-Causal Language Model) uses pilot-wave correlation and manifold-based memory
+            to achieve sub-100ms latency with full cryptographic auditability.
           </p>
         </div>
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, Suspense, useCallback } from "react"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { GlassCard } from "@/components/ui/glass-card"
@@ -32,7 +33,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { generateAIResponse, type AIMessage, type AIConnectionStatus, type AIUsageMetrics } from "@/lib/ai-client"
+import { callNCLMInfer, generateAIResponse, type AIMessage, type AIConnectionStatus, type AIUsageMetrics } from "@/lib/ai-client"
 
 const quickPrompts = [
   { label: "Explain DNA-Lang syntax", icon: Code2 },
@@ -47,6 +48,14 @@ const systemCapabilities = [
   { icon: Shield, title: "Secure Connection", description: "E2E encrypted" },
   { icon: Network, title: "Low Latency", description: "~120ms response" },
 ]
+
+function formatTime(date: Date) {
+  const h = date.getHours()
+  const m = date.getMinutes()
+  const ampm = h >= 12 ? "PM" : "AM"
+  const h12 = h % 12 || 12
+  return `${h12.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")} ${ampm}`
+}
 
 function AIAssistantContent() {
   const [messages, setMessages] = useState<AIMessage[]>([
@@ -111,10 +120,8 @@ function AIAssistantContent() {
     setInput("")
     setIsProcessing(true)
 
-    // Simulate AI response with the AI client
-    await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 700))
-
-    const response = generateAIResponse(input.trim())
+    // Call NC-LM API for inference
+    const response = await callNCLMInfer(input.trim())
 
     const assistantMessage: AIMessage = {
       id: `assistant-${Date.now()}`,
@@ -254,12 +261,20 @@ function AIAssistantContent() {
                     </div>
                     <div className="flex items-center gap-1.5 mt-1.5 px-1">
                       <span className="text-[10px] text-muted-foreground">
-                        {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        {formatTime(message.timestamp)}
                       </span>
                       {message.metadata && (
                         <>
                           <span className="text-[10px] text-muted-foreground">•</span>
                           <span className="text-[10px] text-muted-foreground">{message.metadata.latency}ms</span>
+                          {message.metadata.phi && (
+                            <>
+                              <span className="text-[10px] text-muted-foreground">•</span>
+                              <span className={`text-[10px] ${message.metadata.conscious ? "text-secondary" : "text-muted-foreground"}`}>
+                                Φ {message.metadata.phi.toFixed(3)}
+                              </span>
+                            </>
+                          )}
                         </>
                       )}
                       {message.role === "assistant" && (
@@ -434,10 +449,15 @@ function AIAssistantContent() {
   )
 }
 
+const DynamicAIAssistantContent = dynamic(
+  () => Promise.resolve(AIAssistantContent),
+  { ssr: false }
+)
+
 export default function AIAssistantPage() {
   return (
     <Suspense fallback={null}>
-      <AIAssistantContent />
+      <DynamicAIAssistantContent />
     </Suspense>
   )
 }

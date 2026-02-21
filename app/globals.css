@@ -435,7 +435,7 @@
   @apply text-xs text-muted-foreground uppercase tracking-wide;
 }
 
-/* DNA-Lang branding */
+/* .sh1ft branding */
 .dnalang-gradient {
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   -webkit-background-clip: text;

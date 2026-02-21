@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -41,6 +41,7 @@ import {
   Swords,
   Brain,
   CreditCard,
+  Network, // Network icon imported
 } from "lucide-react"
 
 const bottomNavItems = [
@@ -58,6 +59,7 @@ const menuSections = [
       { icon: Bot, label: "IRIS Engine", href: "/shift-platform/iris", description: "Multi-agent orchestration" },
       { icon: Swords, label: "Code Arena", href: "/shift-platform/code-arena", description: "AI coding battles" },
       { icon: Radio, label: "Osiris Copilot", href: "/osiris-copilot", description: "Holographic interface" },
+      { icon: Network, label: "Agent Collaboration", href: "/agent-collaboration", description: "Quantum agent mesh" },
     ],
   },
   {
@@ -116,27 +118,27 @@ export function MobileNav() {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const [lastScrollY, setLastScrollY] = useState(0)
   const [navVisible, setNavVisible] = useState(true)
+  const lastScrollYRef = useRef(0)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  const handleScroll = useCallback(() => {
-    const currentScrollY = window.scrollY
-    if (currentScrollY > lastScrollY && currentScrollY > 100) {
-      setNavVisible(false)
-    } else {
-      setNavVisible(true)
-    }
-    setLastScrollY(currentScrollY)
-  }, [lastScrollY])
-
   useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      if (currentScrollY > lastScrollYRef.current && currentScrollY > 100) {
+        setNavVisible(false)
+      } else {
+        setNavVisible(true)
+      }
+      lastScrollYRef.current = currentScrollY
+    }
+
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [handleScroll])
+  }, [])
 
   useEffect(() => {
     setMenuOpen(false)
@@ -190,11 +192,12 @@ export function MobileNav() {
                             <Dna className="h-5 w-5 text-primary" />
                           </div>
                           <div>
-                            <span className="dnalang-gradient font-bold">{"DNA::}{::lang"}</span>
-                            <p className="text-xs text-muted-foreground font-normal">SHIFT MCP Platform</p>
+                            <span className="dnalang-gradient font-bold">.sh1ft</span>
+                            <p className="text-xs text-muted-foreground font-normal">Hybrid Quantum-Classical Platform</p>
                           </div>
-                        </SheetTitle>
-                      </SheetHeader>
+          </SheetTitle>
+          <SheetDescription className="sr-only">Platform navigation menu</SheetDescription>
+          </SheetHeader>
 
                       <div className="flex gap-2 py-3">
                         {quickActions.map((action) => (
@@ -260,7 +263,7 @@ export function MobileNav() {
                               <span className="text-xs text-muted-foreground">Z3BRA Status</span>
                             </div>
                             <Badge variant="outline" className="text-[10px] border-secondary/50 text-secondary">
-                              Φ = 7.69 Conscious
+                              Φ = 7.69 Converged
                             </Badge>
                           </div>
                           <Link href="/shift-platform" onClick={() => setMenuOpen(false)}>

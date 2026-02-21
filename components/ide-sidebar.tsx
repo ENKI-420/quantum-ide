@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Code2,
@@ -49,6 +49,11 @@ export function IDESidebar() {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Close mobile sidebar on route change
   useEffect(() => {
@@ -158,7 +163,9 @@ export function IDESidebar() {
     </TooltipProvider>
   )
 
-  const MobileSidebarTrigger = () => (
+  const MobileSidebarTrigger = () => {
+    if (!mounted) return null
+    return (
     <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
       <SheetTrigger asChild>
         <Button
@@ -176,6 +183,7 @@ export function IDESidebar() {
             <Dna className="h-5 w-5 text-primary" />
             <span>IDE Platform</span>
           </SheetTitle>
+          <SheetDescription className="sr-only">IDE navigation sidebar</SheetDescription>
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-80px)]">
           <div className="py-2">
@@ -212,7 +220,7 @@ export function IDESidebar() {
         </ScrollArea>
       </SheetContent>
     </Sheet>
-  )
+  )}
 
   return (
     <>

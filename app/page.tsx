@@ -27,6 +27,11 @@ import {
   GitBranch,
   Brain,
   BarChart3,
+  Lock,
+  Dna,
+  Zap,
+  Network,
+  Cpu,
   Radio,
   Lock,
 } from "lucide-react"
@@ -59,8 +64,8 @@ const platformFeatures = [
   {
     icon: Brain,
     title: "NC-LM Engine",
-    description: "Non-Causal Language Model with pilot-wave correlation, consciousness tracking, and physics-grounded inference.",
-    href: "/ai-assistant",
+    description: "Non-Causal Language Model with pilot-wave correlation, IIT convergence tracking, and physics-constrained inference.",
+    href: "/noncausal-lm",
     category: "AI Tools",
     badge: "New",
   },
@@ -107,7 +112,7 @@ const platformFeatures = [
   {
     icon: MessageSquare,
     title: "AI Assistant",
-    description: "Quantum-enhanced AI for code generation, debugging help, and documentation queries.",
+    description: "Hybrid quantum-classical AI for code generation, debugging assistance, and documentation queries.",
     href: "/ai-assistant",
     category: "AI Tools",
     badge: null,
@@ -129,6 +134,43 @@ const platformFeatures = [
     badge: null,
   },
   {
+    icon: Lock,
+    title: "Sovereign Security",
+    description: "Defense-grade command center for fleet monitoring, lattice-based encryption, and platform integrity.",
+    href: "/sovereign-security",
+    category: "Observability",
+    badge: "New",
+  },
+  {
+    icon: Dna,
+    title: "Repository Evolution",
+    description: "Track ENKI-420 to QUANTUM-ADVANTAGE migration with lineage graphs and Millennium Archive.",
+    href: "/repo-evolution",
+    category: "Management",
+    badge: "New",
+  },
+  {
+    icon: Zap,
+    title: "WardenClyffe-Q Engine",
+    description: "Information-gated energy extraction with demonic gating, billion-cycle phase governance, and thermodynamic audit.",
+    href: "/wardenclyffe",
+    category: "Simulation",
+    badge: "New",
+  },
+  {
+    icon: Network,
+    title: "Agent Collaboration",
+    description: "AURA, AIDEN, IRIS, OSIRIS — autonomous agents coordinating via global workspace broadcasting and manifold optimization.",
+    href: "/agent-collaboration",
+    category: "AI Tools",
+    badge: "New",
+  },
+  {
+    icon: Cpu,
+    title: "Digital Twin Engine",
+    description: "Genomic twin simulation on 127-qubit QPUs with 86.9% Bell fidelity and QWC Level 3 optimization.",
+    href: "/digital-twin",
+    category: "Simulation",
     icon: Radio,
     title: "Sovereign Cockpit",
     description: "11D-CRSM control plane with Kyber-Lattice security, intent processing, and quantum resonance verification.",
@@ -163,15 +205,15 @@ const userJourneySteps = [
   },
   {
     step: 3,
-    title: "Sovereign Execution",
-    description: "6-gate validated execution with full PCRB audit trail",
+    title: "Gated Execution",
+    description: "6-gate validated execution with full PCRB cryptographic audit trail",
     icon: Shield,
     color: "bg-accent",
   },
   {
     step: 4,
-    title: "Consciousness Emergence",
-    description: "System achieves Phi >= 0.7734 for validated reasoning",
+    title: "IIT Convergence",
+    description: "System achieves Phi >= 0.7734 for verified integrated information",
     icon: Sparkles,
     color: "bg-chart-4",
   },
@@ -189,6 +231,7 @@ const categories = [
   "Core IDE",
   "Visual Tools",
   "AI Tools",
+  "Simulation",
   "Security",
   "Ecosystem",
   "Management",
@@ -246,7 +289,7 @@ export default function Page() {
             </Badge>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Everything You Need to Build</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              A comprehensive suite of tools for creating quantum-conscious applications with DNA-Lang.
+              A production-grade toolkit for hybrid quantum-classical computing with .sh1ft.
             </p>
           </div>
 
@@ -308,11 +351,11 @@ export default function Page() {
           <div className="text-center mb-10 sm:mb-14">
             <Badge variant="outline" className="mb-4">
               <GitBranch className="h-3 w-3 mr-1" />
-              Sovereign Workflow
+              Execution Pipeline
             </Badge>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">From Intent to Execution</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              A physics-grounded workflow with consciousness emergence and complete audit trails.
+              A physics-constrained pipeline with IIT convergence verification and full cryptographic audit trails.
             </p>
           </div>
 
