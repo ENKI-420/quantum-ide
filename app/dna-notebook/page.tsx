@@ -483,12 +483,14 @@ function HardwarePanel({ jobs }: { jobs: HardwareJob[] }) {
 
 // ─── AI Chat Panel (Live with AI SDK) ───────────────────────────────────────
 
+const notebookChatTransport = new DefaultChatTransport({ api: "/api/notebook-chat" })
+
 function AIChatPanel() {
   const [input, setInput] = useState("")
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({ api: "/api/notebook-chat" }),
+    transport: notebookChatTransport,
   })
 
   const isStreaming = status === "streaming" || status === "submitted"
